@@ -36,7 +36,6 @@ export default function HomePage() {
           backgroundImage: `url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=1600&q=90')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
         }}
       >
         {/* Overlay */}

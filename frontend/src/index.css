@@ -111,3 +111,18 @@
   border: 2px solid currentColor;
   animation: pulse-ring 1.5s ease-out infinite;
 }
+
+/* Mobile Touch & Scroll utilities */
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { 
   Search, Plus, Minus, Trash2, Printer, QrCode, Banknote, 
   RotateCcw, UtensilsCrossed, ShoppingBag, CheckCircle, 
-  Clock, ArrowLeft, LayoutGrid, Flame, Check, Sparkles, ChefHat
+  Clock, ArrowLeft, ArrowRight, LayoutGrid, Flame, Check, Sparkles, ChefHat
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { getActiveMenu, categories, formatPrice } from '../data/menuData'
@@ -49,6 +49,7 @@ export default function PosPage() {
   const [activeTable, setActiveTable] = useState('T1')
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [mobileTab, setMobileTab] = useState('menu') // 'menu' | 'cart'
   const [tableOrders, setTableOrders] = useState(() => {
     return JSON.parse(localStorage.getItem('kutin_pos_tables') || '{}')
   })
@@ -328,33 +329,56 @@ export default function PosPage() {
         </div>
 
         {/* Quick Nav Links */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {serviceCalls.length > 0 && (
-            <span className="bg-red-500 text-white text-xs px-2.5 py-1 rounded-full font-black animate-bounce flex items-center gap-1 shadow">
-              🔔 {serviceCalls.length} bàn đang gọi
+            <span className="bg-red-500 text-white text-[11px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-full font-black animate-bounce flex items-center gap-1 shadow">
+              🔔 {serviceCalls.length} bàn gọi
             </span>
           )}
           <Link
             to="/admin"
-            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+            className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
           >
-            📊 Báo Cáo / Admin
+            📊 <span className="hidden sm:inline">Báo Cáo /</span> Admin
           </Link>
           <button
             onClick={logoutAdmin}
-            className="flex items-center gap-1 bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition-colors"
+            className="flex items-center gap-1 bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-bold transition-colors"
             title="Khóa máy POS"
           >
-            🔒 Khóa Máy
+            🔒 <span className="hidden sm:inline">Khóa Máy</span>
           </button>
           <Link
             to="/"
-            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
+            className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors"
           >
-            <ArrowLeft size={14} /> Về Web Khách
+            <ArrowLeft size={14} /> <span className="hidden sm:inline">Về Web Khách</span>
           </Link>
         </div>
       </header>
+
+      {/* ===== MOBILE TAB SWITCHER ===== */}
+      <div className="md:hidden flex bg-[#0f3a1a] p-1 border-b border-[#1b632e] flex-shrink-0">
+        <button
+          onClick={() => setMobileTab('menu')}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            mobileTab === 'menu' ? 'bg-[#f5c518] text-[#1a5c2a] font-black shadow' : 'text-white/70'
+          }`}
+        >
+          🍽️ Chọn Món ({filteredItems.length})
+        </button>
+        <button
+          onClick={() => setMobileTab('cart')}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all relative ${
+            mobileTab === 'cart' ? 'bg-[#f5c518] text-[#1a5c2a] font-black shadow' : 'text-white/70'
+          }`}
+        >
+          🧾 Đơn Bàn ({currentCart.reduce((s, i) => s + i.qty, 0)})
+          {currentCart.length > 0 && (
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping absolute top-1.5 right-3" />
+          )}
+        </button>
+      </div>
 
       {/* ===== ACTIVE SERVICE CALLS BANNER (IF ANY) ===== */}
       {serviceCalls.length > 0 && (
@@ -382,8 +406,8 @@ export default function PosPage() {
 
       {/* ===== POS MAIN WORKSPACE ===== */}
       <div className="flex-1 flex overflow-hidden">
-        {/* LEFT COLUMN: Table Bar + Categories + Menu Items (70% width) */}
-        <div className="flex-1 flex flex-col bg-gray-50 border-r border-gray-200 overflow-hidden">
+        {/* LEFT COLUMN: Table Bar + Categories + Menu Items */}
+        <div className={`flex-1 flex-col bg-gray-50 border-r border-gray-200 overflow-hidden ${mobileTab === 'menu' ? 'flex' : 'hidden md:flex'}`}>
           {/* Table Selector Bar */}
           <div className="bg-white p-2.5 border-b border-gray-200 overflow-x-auto scrollbar-none flex-shrink-0">
             <div className="flex gap-2 min-w-max">
@@ -492,10 +516,35 @@ export default function PosPage() {
               ))}
             </div>
           </div>
+
+          {/* Floating Cart Bar on Mobile when browsing Menu */}
+          {currentCart.length > 0 && (
+            <div className="md:hidden p-2.5 bg-white border-t border-gray-200 shadow-lg flex-shrink-0 animate-fadeIn">
+              <button
+                onClick={() => setMobileTab('cart')}
+                className="w-full bg-[#1a5c2a] text-[#f5c518] py-3 rounded-2xl font-black text-xs flex items-center justify-between px-4 shadow-md active:scale-95 transition-transform"
+              >
+                <span>🧾 Xem Đơn Bàn ({currentCart.reduce((s, i) => s + i.qty, 0)} món)</span>
+                <span className="flex items-center gap-1 text-white font-bold">{formatPrice(grandTotal)} <ArrowRight size={14} /></span>
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* RIGHT COLUMN: Active Table Cart & Checkout (30% width) */}
-        <div className="w-[380px] lg:w-[420px] bg-white flex flex-col border-l border-gray-200 shadow-xl flex-shrink-0">
+        {/* RIGHT COLUMN: Active Table Cart & Checkout */}
+        <div className={`w-full md:w-[380px] lg:w-[420px] bg-white flex-col border-l border-gray-200 shadow-xl flex-shrink-0 ${mobileTab === 'cart' ? 'flex' : 'hidden md:flex'}`}>
+          {/* Mobile Back Button to return to menu */}
+          <div className="md:hidden bg-gray-50 px-3.5 py-2 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+            <button
+              onClick={() => setMobileTab('menu')}
+              className="text-xs font-bold text-[#1a5c2a] flex items-center gap-1 py-0.5 hover:underline"
+            >
+              <ArrowLeft size={14} /> ← Quay lại chọn thêm món
+            </button>
+            <span className="text-[11px] font-bold text-gray-500">
+              {TABLES.find(t => t.id === activeTable)?.name}
+            </span>
+          </div>
           {/* Cart Header */}
           <div className="bg-[#1a5c2a] text-white p-3.5 flex items-center justify-between">
             <div>
