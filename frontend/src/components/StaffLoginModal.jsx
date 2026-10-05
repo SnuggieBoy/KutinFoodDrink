@@ -79,7 +79,7 @@ export default function StaffLoginModal({ isOpen, onClose }) {
                 onClick={() => handleNavigate('/admin')}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all"
               >
-                📊 Dashboard Báo Cáo & Quản Lý
+                📊 Trung Tâm Báo Cáo & Quản Trị
                 <ArrowRight size={14} />
               </button>
             </div>

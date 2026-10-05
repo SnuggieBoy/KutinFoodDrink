@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MenuCard from '../components/MenuCard'
 import { featuredItems, categories } from '../data/menuData'
+import { useRestaurant } from '../context/RestaurantContext'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -24,6 +25,15 @@ const reviews = [
 ]
 
 export default function HomePage() {
+  const { storeInfo } = useRestaurant()
+  const openHours = storeInfo?.openHours || '10:00 - 20:30 hàng ngày'
+  const tagline = storeInfo?.tagline || '"Ngon hết sẩy!"'
+  const hotline = storeInfo?.hotline || '0947 007 881'
+  const telHref = `tel:${hotline.replace(/\s+/g, '')}`
+  const address = storeInfo?.address || '1 Ngô Sĩ Liên, Khu Phố 2, Hố Nai, Biên Hòa, Đồng Nai'
+  const mapEmbedUrl = storeInfo?.mapEmbedUrl || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.472888523306!2d106.877028!3d10.957519!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174dfb2a472c51f%3A0x6b490d182b8344e2!2zMSBOZ8O0IFMlogsIExpw6puLCBUw6JuIEJpw6puLCBUaMOgbmggcGjhu5EgQmnDqm4gSMOyYSwgxJDhu5NuZyBOYWk!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s'
+  const zaloHref = storeInfo?.zalo ? (storeInfo.zalo.startsWith('http') ? storeInfo.zalo : `https://zalo.me/${storeInfo.zalo.replace(/\s+/g, '')}`) : 'https://zalo.me/0947007881'
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -54,7 +64,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 bg-[#f5c518]/20 border border-[#f5c518]/50 text-[#f5c518] px-4 py-1.5 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm"
           >
             <span className="animate-pulse">●</span>
-            Đang phục vụ: 10:00 - 20:30 hàng ngày
+            Đang phục vụ: {openHours}
           </motion.div>
 
           {/* Logo mark */}
@@ -104,7 +114,7 @@ export default function HomePage() {
             transition={{ duration: 0.5, delay: 0.55 }}
             className="text-[#f5c518] font-black italic text-2xl md:text-3xl mb-8 text-shadow-sm"
           >
-            "Ngon hết sẩy!"
+            {tagline}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -443,20 +453,20 @@ export default function HomePage() {
               {[
                 {
                   icon: <MapPin size={22} />,
-                  title: 'Địa Chỉ',
-                  value: '1 Ngô Sĩ Liên, Khu Phố 2, Hố Nai, Biên Hòa, Đồng Nai',
+                  title: 'Địa Chỉ Quán',
+                  value: address,
                   action: null,
                 },
                 {
                   icon: <Phone size={22} />,
-                  title: 'Điện Thoại / Zalo',
-                  value: '0947 007 881',
-                  action: 'tel:0947007881',
+                  title: 'Điện Thoại / Hotline',
+                  value: hotline,
+                  action: telHref,
                 },
                 {
                   icon: <Clock size={22} />,
-                  title: 'Giờ Mở Cửa',
-                  value: 'Thứ 2 - Chủ Nhật: 10:00 - 20:30',
+                  title: 'Thời Gian Phục Vụ',
+                  value: openHours,
                   action: null,
                 },
               ].map((info) => (
@@ -489,14 +499,14 @@ export default function HomePage() {
               className="rounded-2xl overflow-hidden shadow-xl border border-gray-200"
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.862827756556!2d106.8893!3d10.9250!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174d8d7b5c1b3d5%3A0x0!2zSMO0IE5haSwgQmnDqm4gSMOyYSwgxJDhu5NuZyBOYWk!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn"
+                src={mapEmbedUrl}
                 width="100%"
                 height="400"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="KUTIN Food & Drink - 1 Ngô Sĩ Liên, Hố Nai, Đồng Nai"
+                title={`${storeInfo?.name || 'KUTIN'} - Vị Trí Google Maps`}
               />
             </motion.div>
           </div>
@@ -507,12 +517,12 @@ export default function HomePage() {
 
       {/* Floating Zalo button */}
       <a
-        href="https://zalo.me/0947007881"
+        href={zaloHref}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"
         style={{ background: '#0068FF' }}
-        title="Chat Zalo"
+        title="Chat Zalo Tư Vấn"
       >
         <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
           <circle cx="24" cy="24" r="24" fill="#0068FF"/>

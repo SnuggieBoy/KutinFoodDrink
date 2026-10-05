@@ -4,10 +4,12 @@ import { formatPrice } from '../data/menuData'
 
 const badgeColors = {
   'Hot': 'bg-red-500 text-white',
+  'Món Hot': 'bg-red-500 text-white',
   'Mới': 'bg-blue-500 text-white',
   'Bán chạy': 'bg-orange-500 text-white',
   'Đặc biệt': 'bg-purple-600 text-white',
   'VIP': 'bg-yellow-500 text-white',
+  'Thượng hạng': 'bg-yellow-500 text-white',
 }
 
 // Unsplash food images by category
@@ -33,6 +35,8 @@ export default function MenuCard({ item, compact = false }) {
   const { addItem } = useCart()
   const imgSrc = categoryImages[item.category] || categoryImages.default
 
+  const displayBadge = item.badge === 'Hot' ? '🔥 Món Hot' : item.badge === 'VIP' ? '👑 Thượng Hạng' : item.badge
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-md card-hover border border-gray-100 flex flex-col">
       {/* Image */}
@@ -45,7 +49,7 @@ export default function MenuCard({ item, compact = false }) {
         />
         {item.badge && (
           <span className={`absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full ${badgeColors[item.badge] || 'bg-gray-600 text-white'}`}>
-            {item.badge}
+            {displayBadge}
           </span>
         )}
         {!item.isAvailable && (

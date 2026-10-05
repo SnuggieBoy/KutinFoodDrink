@@ -1,8 +1,10 @@
 import { useRef } from 'react'
 import { Printer, X, Download } from 'lucide-react'
 import { formatPrice } from '../data/menuData'
+import { useRestaurant } from '../context/RestaurantContext'
 
 export default function ReceiptPrintModal({ isOpen, onClose, order }) {
+  const { storeInfo } = useRestaurant()
   const receiptRef = useRef(null)
 
   if (!isOpen || !order) return null
@@ -19,6 +21,11 @@ export default function ReceiptPrintModal({ isOpen, onClose, order }) {
     minute: '2-digit',
     second: '2-digit',
   })
+
+  const storeName = storeInfo?.name || 'KUTIN FOOD & DRINK'
+  const storeAddress = storeInfo?.shortAddress || storeInfo?.address || '1 Ngô Sĩ Liên, KP2, Hố Nai, Đồng Nai'
+  const storeHotline = storeInfo?.hotline || '0947 007 881'
+  const wifiInfo = storeInfo?.wifiName ? `WiFi: ${storeInfo.wifiName} (Pass: ${storeInfo.wifiPass || ''})` : null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -55,10 +62,11 @@ export default function ReceiptPrintModal({ isOpen, onClose, order }) {
           >
             {/* Header */}
             <div className="text-center pb-3 border-b border-dashed border-gray-400">
-              <h2 className="text-base font-black tracking-wider uppercase">KUTIN FOOD & DRINK</h2>
+              <h2 className="text-base font-black tracking-wider uppercase">{storeName}</h2>
               <p className="text-[10px] text-gray-600 uppercase font-semibold">Ăn Vặt · Mì Cay · Tokpokki · Gà Xù</p>
-              <p className="text-[10px] text-gray-600 mt-1">1 Ngô Sĩ Liên, KP2, Hố Nai, Đồng Nai</p>
-              <p className="text-[10px] text-gray-600">Hotline: 0947 007 881</p>
+              <p className="text-[10px] text-gray-600 mt-1">{storeAddress}</p>
+              <p className="text-[10px] text-gray-600">Hotline: {storeHotline}</p>
+              {wifiInfo && <p className="text-[9px] text-gray-500 mt-0.5">{wifiInfo}</p>}
               <div className="my-2 border-t border-dashed border-gray-300"></div>
               <h3 className="text-xs font-black uppercase">PHIẾU THANH TOÁN</h3>
               <p className="text-[10px] text-gray-500">Mã đơn: <span className="font-bold text-black">#{order.orderNumber}</span></p>
@@ -142,16 +150,16 @@ export default function ReceiptPrintModal({ isOpen, onClose, order }) {
               <div className="flex justify-between text-[10px] text-gray-600 pt-1">
                 <span>Hình thức thanh toán:</span>
                 <span className="font-bold uppercase">
-                  {order.paymentMethod === 'sepay' || order.paymentMethod === 'transfer' ? 'Chuyển khoản VietQR SePay' : 'Tiền mặt (Cash)'}
+                  {order.paymentMethod === 'sepay' || order.paymentMethod === 'transfer' ? 'Chuyển khoản VietQR Tự Động' : 'Tiền mặt'}
                 </span>
               </div>
             </div>
 
             {/* Footer */}
             <div className="text-center pt-3 space-y-1">
-              <p className="font-bold text-[10px]">KUTIN CẢM ƠN QUÝ KHÁCH!</p>
+              <p className="font-bold text-[10px]">{storeName} CẢM ƠN QUÝ KHÁCH!</p>
               <p className="text-[9px] text-gray-500 italic">Chúc Quý Khách ngon miệng - Hẹn gặp lại!</p>
-              <p className="text-[8px] text-gray-400 font-sans mt-2">Phần mềm quản lý KUTIN POS • SePay Pay</p>
+              <p className="text-[8px] text-gray-400 font-sans mt-2">Phần mềm bán hàng KUTIN F&B • Thanh toán tự động VietQR</p>
             </div>
           </div>
         </div>

@@ -2,14 +2,19 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Home, Utensils, ShoppingBag, Bell, Phone } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useRestaurant } from '../context/RestaurantContext'
 import ServiceCallModal from './ServiceCallModal'
 import CartDrawer from './CartDrawer'
 
 export default function MobileBottomNav() {
   const location = useLocation()
   const { totalItems } = useCart()
+  const { storeInfo } = useRestaurant()
   const [showCallModal, setShowCallModal] = useState(false)
   const [showCartDrawer, setShowCartDrawer] = useState(false)
+
+  const hotline = storeInfo?.hotline || '0947 007 881'
+  const telHref = `tel:${hotline.replace(/\s+/g, '')}`
 
   // Do not show on POS or Admin pages (they have their own full screen layout)
   if (location.pathname === '/pos' || location.pathname === '/admin') {
@@ -70,7 +75,7 @@ export default function MobileBottomNav() {
 
           {/* Hotline / Zalo */}
           <a
-            href="tel:0947007881"
+            href={telHref}
             className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-emerald-700 transition-all font-medium"
           >
             <Phone size={19} />

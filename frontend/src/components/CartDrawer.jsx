@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import { X, Minus, Plus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { formatPrice } from '../data/menuData'
+import { useRestaurant } from '../context/RestaurantContext'
 
 export default function CartDrawer({ open, onClose }) {
+  const { storeInfo } = useRestaurant()
   const { items, totalAmount, updateQty, removeItem, clearCart } = useCart()
   const drawerRef = useRef(null)
 
@@ -14,8 +16,10 @@ export default function CartDrawer({ open, onClose }) {
 
   const buildWhatsAppMessage = () => {
     const lines = items.map(i => `- ${i.name} x${i.qty} = ${formatPrice(i.price * i.qty)}${i.note ? ` (${i.note})` : ''}`)
-    const msg = `🍜 *Đặt món KUTIN Food & Drink*\n\n${lines.join('\n')}\n\n💰 *Tổng: ${formatPrice(totalAmount)}*\n\nXin vui lòng xác nhận đơn hàng!`
-    return `https://zalo.me/0947007881?text=${encodeURIComponent(msg)}`
+    const storeName = storeInfo?.name || 'KUTIN Food & Drink'
+    const msg = `🍜 *Đặt món ${storeName}*\n\n${lines.join('\n')}\n\n💰 *Tổng: ${formatPrice(totalAmount)}*\n\nXin vui lòng xác nhận đơn hàng!`
+    const zaloPhone = (storeInfo?.zalo || storeInfo?.hotline || '0947007881').replace(/\s+/g, '')
+    return `https://zalo.me/${zaloPhone}?text=${encodeURIComponent(msg)}`
   }
 
   return (

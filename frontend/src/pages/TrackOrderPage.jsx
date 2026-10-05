@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { formatPrice } from '../data/menuData'
+import { useRestaurant } from '../context/RestaurantContext'
 
 const statusConfig = {
   pending: { label: 'Chờ xác nhận', icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50', step: 1 },
@@ -18,6 +19,11 @@ const statusConfig = {
 const steps = ['Chờ xác nhận', 'Đã xác nhận', 'Đang chuẩn bị', 'Đang giao hàng', 'Hoàn thành']
 
 export default function TrackOrderPage() {
+  const { storeInfo } = useRestaurant()
+  const hotline = storeInfo?.hotline || '0947 007 881'
+  const telHref = `tel:${hotline.replace(/\s+/g, '')}`
+  const zaloPhone = (storeInfo?.zalo || hotline).replace(/\s+/g, '')
+
   const [searchParams] = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('order') || '')
   const [order, setOrder] = useState(null)
@@ -157,7 +163,7 @@ export default function TrackOrderPage() {
               {/* Direct Zalo Chat about this order */}
               <div className="mt-3 text-center">
                 <a
-                  href={`https://zalo.me/0947007881?text=${encodeURIComponent(`Xin chào KUTIN! Tôi muốn hỏi thăm về đơn hàng #${order.orderNumber}`)}`}
+                  href={`https://zalo.me/${zaloPhone}?text=${encodeURIComponent(`Xin chào ${storeInfo?.name || 'KUTIN'}! Tôi muốn hỏi thăm về đơn hàng #${order.orderNumber}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-1.5 w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm"
@@ -210,7 +216,7 @@ export default function TrackOrderPage() {
             {/* Help */}
             <div className="bg-[#f5c518]/10 border border-[#f5c518] rounded-2xl p-4 text-center">
               <p className="text-sm text-gray-700">Cần hỗ trợ? Gọi ngay cho chúng tôi!</p>
-              <a href="tel:0947007881" className="font-black text-[#1a5c2a] text-lg hover:underline">0947 007 881</a>
+              <a href={telHref} className="font-black text-[#1a5c2a] text-lg hover:underline">{hotline}</a>
             </div>
           </motion.div>
         )}

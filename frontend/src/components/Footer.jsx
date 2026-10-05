@@ -1,8 +1,20 @@
 import { Phone, MapPin, Clock, Send } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useRestaurant } from '../context/RestaurantContext'
 
 export default function Footer() {
+  const { storeInfo } = useRestaurant()
   const currentYear = new Date().getFullYear()
+
+  const storeName = storeInfo?.name || 'KUTIN Food & Drink'
+  const hotline = storeInfo?.hotline || '0947 007 881'
+  const telHref = `tel:${hotline.replace(/\s+/g, '')}`
+  const zaloHref = storeInfo?.zalo ? (storeInfo.zalo.startsWith('http') ? storeInfo.zalo : `https://zalo.me/${storeInfo.zalo.replace(/\s+/g, '')}`) : 'https://zalo.me/0947007881'
+  const address = storeInfo?.address || '1 Ngô Sĩ Liên, Khu Phố 2, Hố Nai, Biên Hòa, Đồng Nai'
+  const openHours = storeInfo?.openHours || '10:00 - 20:30'
+  const slogan = storeInfo?.slogan || 'Ngon - Sạch - Giá Hạt Dẻ'
+  const tagline = storeInfo?.tagline || '"Ngon hết sẩy!"'
+  const mapEmbedUrl = storeInfo?.mapEmbedUrl || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.472888523306!2d106.877028!3d10.957519!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174dfb2a472c51f%3A0x6b490d182b8344e2!2zMSBOZ8O0IFMlogsIExpw6puLCBUw6JuIEJpw6puLCBUaMOgbmggcGjhu5EgQmnDqm4gSMOyYSwgxJDhu5NuZyBOYWk!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s'
 
   return (
     <footer className="bg-[#0f3a1a] text-white">
@@ -13,14 +25,14 @@ export default function Footer() {
           <div className="flex items-center gap-2 mb-4">
             <div className="w-12 h-12 rounded-full bg-[#f5c518] flex items-center justify-center font-black text-[#1a5c2a] text-2xl">K</div>
             <div>
-              <p className="font-black text-2xl tracking-wider">KUTIN</p>
+              <p className="font-black text-2xl tracking-wider">{storeName.split(' ')[0] || 'KUTIN'}</p>
               <p className="text-[#f5c518] text-xs font-semibold tracking-widest">FOOD & DRINK</p>
             </div>
           </div>
           <p className="text-gray-300 text-sm leading-relaxed mb-4">
-            Ngon - Sạch - Chất Lượng. Chúng tôi mang đến những món ăn ngon nhất với nguyên liệu tươi sạch, phục vụ tận tâm.
+            {slogan}. Chúng tôi mang đến những món ăn ngon nhất với nguyên liệu tươi sạch, phục vụ tận tâm chu đáo.
           </p>
-          <p className="text-[#f5c518] font-bold italic">"Ngon hết sẩy!"</p>
+          <p className="text-[#f5c518] font-bold italic">{tagline}</p>
           {/* Social */}
           <div className="flex items-center gap-3 mt-4">
             <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#f5c518] hover:text-[#1a5c2a] transition-colors" title="Facebook">
@@ -29,7 +41,7 @@ export default function Footer() {
             <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#f5c518] hover:text-[#1a5c2a] transition-colors" title="Instagram">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
             </a>
-            <a href="https://zalo.me/0947007881" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#f5c518] hover:text-[#1a5c2a] transition-colors" title="Zalo">
+            <a href={zaloHref} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#f5c518] hover:text-[#1a5c2a] transition-colors" title="Zalo">
               <Send size={16} />
             </a>
           </div>
@@ -42,7 +54,7 @@ export default function Footer() {
           <ul className="space-y-2">
             {[
               { to: '/', label: 'Trang Chủ' },
-              { to: '/menu', label: 'Xem Menu' },
+              { to: '/menu', label: 'Xem Thực Đơn' },
               { to: '/order', label: 'Đặt Món Online' },
               { to: '/track', label: 'Theo Dõi Đơn Hàng' },
             ].map(link => (
@@ -58,21 +70,21 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <h3 className="font-bold text-lg mb-4 text-[#f5c518]">Liên Hệ</h3>
+          <h3 className="font-bold text-lg mb-4 text-[#f5c518]">Liên Hệ & Vị Trí</h3>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
               <MapPin size={16} className="text-[#f5c518] mt-0.5 flex-shrink-0" />
-              <p className="text-gray-300 text-sm">1 Ngô Sĩ Liên, Khu Phố 2, Hố Nai, Biên Hòa, Đồng Nai</p>
+              <p className="text-gray-300 text-sm">{address}</p>
             </div>
             <div className="flex items-center gap-3">
               <Phone size={16} className="text-[#f5c518] flex-shrink-0" />
-              <a href="tel:0947007881" className="text-gray-300 text-sm hover:text-white transition-colors">0947 007 881</a>
+              <a href={telHref} className="text-gray-300 text-sm hover:text-white transition-colors">{hotline}</a>
             </div>
             <div className="flex items-start gap-3">
               <Clock size={16} className="text-[#f5c518] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-gray-300 text-sm">Thứ 2 - Chủ Nhật</p>
-                <p className="text-white font-semibold text-sm">10:00 - 20:30</p>
+                <p className="text-gray-300 text-sm">Thời gian mở cửa</p>
+                <p className="text-white font-semibold text-sm">{openHours}</p>
               </div>
             </div>
           </div>
@@ -80,14 +92,14 @@ export default function Footer() {
           {/* Map preview */}
           <div className="mt-4 rounded-xl overflow-hidden border border-[#2d7a40]">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.862827756556!2d106.89!3d10.925!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDU1JzMwLjAiTiAxMDbCsDUzJzI0LjAiRQ!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn"
+              src={mapEmbedUrl}
               width="100%"
               height="120"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="KUTIN Food & Drink Location"
+              title={`${storeName} - Vị Trí Bản Đồ`}
             />
           </div>
         </div>
@@ -96,12 +108,12 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-[#2d7a40] py-4 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-gray-400">
-          <p>© {currentYear} KUTIN Food & Drink. All rights reserved.</p>
+          <p>© {currentYear} {storeName}. Tất cả các quyền được bảo lưu.</p>
           <div className="flex items-center gap-4 text-xs">
-            <p>Giao hàng tận nơi • Hotline: <a href="tel:0947007881" className="text-[#f5c518] hover:underline">0947 007 881</a></p>
+            <p>Giao hàng tận nơi • Hotline: <a href={telHref} className="text-[#f5c518] hover:underline">{hotline}</a></p>
             <span className="text-gray-600">•</span>
             <Link to="/admin" className="text-gray-500 hover:text-white transition-colors">
-              🔒 Nhân viên
+              🔒 Quản Trị Quán
             </Link>
           </div>
         </div>

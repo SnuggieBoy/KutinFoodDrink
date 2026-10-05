@@ -14,11 +14,11 @@ import { useRestaurant } from '../context/RestaurantContext'
 import { sound } from '../utils/sound'
 import { UtensilsCrossed } from 'lucide-react'
 
-const DELIVERY_FEE = 15000
-const MIN_ORDER_FREE_DELIVERY = 150000
-
 export default function OrderPage() {
-  const { currentTable } = useRestaurant()
+  const { currentTable, storeInfo } = useRestaurant()
+  const deliveryFee = Number(storeInfo?.deliveryFee) || 15000
+  const minFreeDelivery = Number(storeInfo?.minFreeDelivery) || 150000
+
   const { items, totalAmount, updateQty, removeItem, clearCart } = useCart()
   const navigate = useNavigate()
   const [orderType, setOrderType] = useState(currentTable ? 'dine-in' : 'delivery')
@@ -33,7 +33,7 @@ export default function OrderPage() {
   const [loading, setLoading] = useState(false)
   const [pendingSepayOrder, setPendingSepayOrder] = useState(null)
 
-  const shippingFee = orderType === 'delivery' && totalAmount < MIN_ORDER_FREE_DELIVERY ? DELIVERY_FEE : 0
+  const shippingFee = orderType === 'delivery' && totalAmount < minFreeDelivery ? deliveryFee : 0
   const grandTotal = totalAmount + shippingFee
 
   const finalizeOrder = (orderNum, orderData) => {
@@ -224,12 +224,12 @@ export default function OrderPage() {
                 🍽️ Đơn gọi món sẽ gửi thẳng tới Bếp & Thu ngân của quán.
               </p>
             )}
-            {orderType === 'delivery' && totalAmount < MIN_ORDER_FREE_DELIVERY && (
+            {orderType === 'delivery' && totalAmount < minFreeDelivery && (
               <p className="text-xs text-orange-600 mt-2 bg-orange-50 rounded-xl p-2">
-                Đặt thêm {formatPrice(MIN_ORDER_FREE_DELIVERY - totalAmount)} để được miễn phí giao hàng!
+                Đặt thêm {formatPrice(minFreeDelivery - totalAmount)} để được miễn phí giao hàng!
               </p>
             )}
-            {orderType === 'delivery' && totalAmount >= MIN_ORDER_FREE_DELIVERY && (
+            {orderType === 'delivery' && totalAmount >= minFreeDelivery && (
               <p className="text-xs text-green-600 mt-2 bg-green-50 rounded-xl p-2 font-semibold">✅ Bạn đủ điều kiện miễn phí giao hàng!</p>
             )}
           </div>
@@ -278,8 +278,8 @@ export default function OrderPage() {
               <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2"><CreditCard size={18} className="text-[#1a5c2a]" /> Phương Thức Thanh Toán</h3>
               <div className="space-y-2">
                 {[
-                  { id: 'sepay', label: '⚡ Chuyển khoản VietQR (SePay)', desc: 'Quét mã VietQR thanh toán tự động xác nhận 24/7' },
-                  { id: 'cod', label: '💵 Tiền mặt (COD)', desc: 'Thanh toán trực tiếp khi nhận hàng' },
+                  { id: 'sepay', label: '⚡ Chuyển khoản VietQR Tự Động', desc: 'Quét mã VietQR thanh toán tự động xác nhận 24/7' },
+                  { id: 'cod', label: '💵 Tiền mặt khi nhận hàng', desc: 'Thanh toán trực tiếp bằng tiền mặt' },
                   { id: 'transfer', label: '🏦 Chuyển khoản thông thường', desc: 'Chuyển khoản thủ công qua số tài khoản quán' },
                 ].map(method => (
                   <label key={method.id} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${payMethod === method.id ? 'border-[#1a5c2a] bg-[#1a5c2a]/5 shadow-sm' : 'border-gray-200 hover:border-gray-300'}`}>
@@ -319,7 +319,7 @@ export default function OrderPage() {
               {loading ? (
                 <><span className="animate-spin">⏳</span> Đang xử lý...</>
               ) : payMethod === 'sepay' ? (
-                <><CreditCard size={20} /> Thanh Toán Qua SePay QR</>
+                <><CreditCard size={20} /> Thanh Toán Chuyển Khoản VietQR</>
               ) : (
                 <><Check size={20} /> Xác Nhận Đặt Hàng</>
               )}

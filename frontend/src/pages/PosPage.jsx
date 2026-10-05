@@ -707,7 +707,7 @@ export default function PosPage() {
                   onClick={() => setShowSepayModal(true)}
                   className="py-3 bg-gradient-to-r from-[#1a5c2a] to-[#2d7a40] hover:from-[#0f3a1a] hover:to-[#1a5c2a] text-[#f5c518] rounded-xl font-black text-xs flex items-center justify-center gap-1.5 shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 border border-[#f5c518]/30"
                 >
-                  <QrCode size={16} /> SePay QR
+                  <QrCode size={16} /> Quét Mã QR
                 </button>
               </div>
             </div>

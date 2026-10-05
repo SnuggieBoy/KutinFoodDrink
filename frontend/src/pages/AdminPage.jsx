@@ -6,12 +6,12 @@ import {
   Flame, CreditCard, Banknote, ArrowUpRight, Search, ShieldCheck, Check,
   Plus, Edit2, Trash2, Filter, RotateCcw, LayoutGrid, List, AlertTriangle,
   ArrowRight, X, Sparkles, CheckSquare, Coffee, Utensils, Menu as MenuIcon,
-  ChevronRight, ExternalLink, HelpCircle
+  ChevronRight, ExternalLink, HelpCircle, Store, MapPin, Phone, Wifi, Navigation, Globe
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { menuItems, formatPrice, categories, getActiveMenu, saveActiveMenu } from '../data/menuData'
 import ReceiptPrintModal from '../components/ReceiptPrintModal'
-import { useRestaurant } from '../context/RestaurantContext'
+import { useRestaurant, DEFAULT_STORE_INFO } from '../context/RestaurantContext'
 
 // Demo sample data to make dashboard look rich and alive for demo
 const INITIAL_DEMO_ORDERS = [
@@ -87,11 +87,60 @@ const INITIAL_DEMO_ORDERS = [
 ]
 
 export default function AdminPage() {
-  const { isAdminAuthenticated, loginAdmin, logoutAdmin } = useRestaurant()
+  const { 
+    isAdminAuthenticated, 
+    loginAdmin, 
+    logoutAdmin,
+    storeInfo,
+    updateStoreInfo,
+    resetStoreInfo,
+  } = useRestaurant()
   const [pass, setPass] = useState('')
   const [passErr, setPassErr] = useState(false)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [orders, setOrders] = useState([])
+
+  // STORE SETTINGS & GOOGLE MAPS STATE (FULL CRUD)
+  const [storeForm, setStoreForm] = useState(() => ({ ...(storeInfo || DEFAULT_STORE_INFO) }))
+
+  useEffect(() => {
+    if (storeInfo) {
+      setStoreForm({ ...storeInfo })
+    }
+  }, [storeInfo])
+
+  const handleMapEmbedUrlChange = (val) => {
+    let cleanUrl = val.trim()
+    const iframeSrcMatch = cleanUrl.match(/src=["'](.*?)["']/)
+    if (iframeSrcMatch && iframeSrcMatch[1]) {
+      cleanUrl = iframeSrcMatch[1]
+    }
+    setStoreForm(prev => ({ ...prev, mapEmbedUrl: cleanUrl }))
+  }
+
+  const handleSaveStoreInfo = (e) => {
+    if (e) e.preventDefault()
+    if (!storeForm.name.trim()) {
+      toast.error('Vui lòng nhập tên quán!')
+      return
+    }
+    if (!storeForm.hotline.trim()) {
+      toast.error('Vui lòng nhập số điện thoại hotline!')
+      return
+    }
+    updateStoreInfo({
+      ...storeForm,
+      deliveryFee: Number(storeForm.deliveryFee) || 0,
+      minFreeDelivery: Number(storeForm.minFreeDelivery) || 0,
+    })
+  }
+
+  const handleResetStoreInfo = () => {
+    if (window.confirm('Khôi phục toàn bộ thông tin quán và vị trí bản đồ về mặc định?')) {
+      resetStoreInfo()
+      setStoreForm({ ...DEFAULT_STORE_INFO })
+    }
+  }
   
   // Dashboard state
   const [timeRange, setTimeRange] = useState('today') // 'today' | '7days' | 'month'
@@ -366,7 +415,7 @@ export default function AdminPage() {
               {passErr && <p className="text-red-500 text-xs mt-1">Mật khẩu không đúng!</p>}
             </div>
             <button type="submit" className="w-full bg-[#1a5c2a] text-[#f5c518] py-3.5 rounded-2xl font-black text-sm hover:bg-[#2d7a40] transition-colors shadow-md active:scale-95">
-              Đăng Nhập Dashboard
+              Đăng Nhập Quản Trị Quán
             </button>
           </form>
           <div className="mt-4 text-center">
@@ -380,11 +429,12 @@ export default function AdminPage() {
   }
 
   const tabs = [
-    { id: 'dashboard', label: 'Doanh Thu', fullLabel: 'Doanh Thu & Thống Kê', icon: <BarChart3 size={17} /> },
+    { id: 'dashboard', label: 'Báo Cáo', fullLabel: 'Báo Cáo & Thống Kê', icon: <BarChart3 size={17} /> },
     { id: 'menu', label: 'Thực Đơn', fullLabel: 'Quản Lý Thực Đơn', icon: <Package size={17} />, badge: menu.filter(m => !m.isAvailable).length, badgeColor: 'bg-amber-500' },
     { id: 'orders', label: 'Đơn Hàng', fullLabel: 'Quản Lý Đơn Hàng', icon: <ShoppingBag size={17} />, badge: pendingOrders.length, badgeColor: 'bg-red-500' },
-    { id: 'kitchen', label: 'Bếp KDS', fullLabel: 'Màn Hình Bếp (KDS)', icon: <ChefHat size={17} />, badge: preparingOrders.length, badgeColor: 'bg-orange-500' },
-    { id: 'sepay', label: 'SePay QR', fullLabel: 'Cấu Hình SePay QR', icon: <QrCode size={17} /> },
+    { id: 'kitchen', label: 'Bếp Nấu', fullLabel: 'Màn Hình Bếp & Chế Biến', icon: <ChefHat size={17} />, badge: preparingOrders.length, badgeColor: 'bg-orange-500' },
+    { id: 'store', label: 'Quán & Bản Đồ', fullLabel: 'Thông Tin Quán & Bản Đồ', icon: <Store size={17} /> },
+    { id: 'sepay', label: 'Thanh Toán QR', fullLabel: 'Cấu Hình Thanh Toán QR', icon: <QrCode size={17} /> },
   ]
 
   return (
@@ -1402,7 +1452,7 @@ export default function AdminPage() {
             <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200 flex items-center justify-between">
               <div>
                 <h2 className="font-black text-xl sm:text-2xl text-gray-900 flex items-center gap-2">
-                  <ChefHat className="text-[#1a5c2a]" /> Bếp & Pha Chế (KDS)
+                  <ChefHat className="text-[#1a5c2a]" /> Bếp & Chế Biến Món Ăn
                 </h2>
                 <p className="text-gray-500 text-xs">Hiển thị các món đang chờ chế biến</p>
               </div>
@@ -1474,7 +1524,7 @@ export default function AdminPage() {
           <div className="max-w-2xl space-y-4 sm:space-y-5 animate-fadeIn">
             <div>
               <h2 className="font-black text-xl sm:text-2xl text-gray-900 flex items-center gap-2">
-                <QrCode className="text-[#1a5c2a]" /> Cấu Hình SePay VietQR
+                <QrCode className="text-[#1a5c2a]" /> Cấu Hình Thanh Toán VietQR Tự Động
               </h2>
               <p className="text-gray-500 text-xs">Cấu hình tài khoản ngân hàng và Webhook tự động khớp lệnh</p>
             </div>
@@ -1571,6 +1621,365 @@ export default function AdminPage() {
                 Lưu Cấu Hình SePay
               </button>
             </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB 6: THÔNG TIN QUÁN & BẢN ĐỒ GOOGLE MAPS (FULL CRUD)          */}
+        {/* ============================================================== */}
+        {activeTab === 'store' && (
+          <div className="space-y-4 sm:space-y-6 animate-fadeIn pb-8">
+            {/* Header with actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-gray-200 shadow-sm">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#1a5c2a] bg-emerald-50 px-2 py-0.5 rounded-lg">
+                    Quản Lý Hệ Thống Quán
+                  </span>
+                  <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
+                    ⚡ Đồng bộ tức thì mọi màn hình
+                  </span>
+                </div>
+                <h2 className="font-black text-xl sm:text-2xl lg:text-3xl text-gray-900 mt-1 flex items-center gap-2">
+                  <Store className="text-[#1a5c2a]" /> Thông Tin Quán & Vị Trí Bản Đồ
+                </h2>
+                <p className="text-gray-500 text-xs mt-0.5">
+                  Thay đổi địa chỉ, hotline, giờ mở cửa, phí ship và bản đồ Google Maps tự động cập nhật ngay trên Website, Chân trang và Hóa đơn.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleResetStoreInfo}
+                  className="px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-100 flex items-center gap-1.5 transition-colors"
+                >
+                  <RotateCcw size={14} /> Khôi Phục Gốc
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveStoreInfo}
+                  className="bg-[#1a5c2a] hover:bg-[#2d7a40] text-[#f5c518] px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-md transition-all active:scale-95"
+                >
+                  <Check size={15} /> Lưu Cập Nhật
+                </button>
+              </div>
+            </div>
+
+            {/* Main Form & Preview Grid */}
+            <form onSubmit={handleSaveStoreInfo} className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+              {/* LEFT COLUMN: Store Profile & Contact Info (7 cols) */}
+              <div className="lg:col-span-7 space-y-4">
+                {/* 1. Thông Tin Nhận Diện */}
+                <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200 shadow-sm space-y-3">
+                  <h3 className="font-black text-sm text-gray-800 flex items-center gap-2 border-b pb-2">
+                    <span className="w-6 h-6 rounded-lg bg-emerald-100 text-[#1a5c2a] flex items-center justify-center text-xs">🏠</span>
+                    Thông Tin Nhận Diện Quán
+                  </h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Tên Quán Ăn *</label>
+                      <input
+                        type="text"
+                        required
+                        value={storeForm.name || ''}
+                        onChange={e => setStoreForm({ ...storeForm, name: e.target.value })}
+                        placeholder="VD: KUTIN Food & Drink"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-900 focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Khẩu Hiệu / Slogan</label>
+                      <input
+                        type="text"
+                        value={storeForm.slogan || ''}
+                        onChange={e => setStoreForm({ ...storeForm, slogan: e.target.value })}
+                        placeholder="VD: Ngon - Sạch - Giá Hạt Dẻ"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium text-gray-800 focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">Câu Chào / Giới Thiệu Ngắn</label>
+                    <input
+                      type="text"
+                      value={storeForm.tagline || ''}
+                      onChange={e => setStoreForm({ ...storeForm, tagline: e.target.value })}
+                      placeholder="VD: Món ngon đậm vị xứ Hố Nai, phục vụ tận tâm chu đáo!"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[#1a5c2a]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">Thông Báo Chạy Đầu Trang (Marquee / Banner)</label>
+                    <textarea
+                      rows={2}
+                      value={storeForm.orderNotice || ''}
+                      onChange={e => setStoreForm({ ...storeForm, orderNotice: e.target.value })}
+                      placeholder="Thông báo ưu đãi hoặc lưu ý cho khách hàng..."
+                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[#1a5c2a] resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Liên Hệ & Giờ Phục Vụ */}
+                <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200 shadow-sm space-y-3">
+                  <h3 className="font-black text-sm text-gray-800 flex items-center gap-2 border-b pb-2">
+                    <span className="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center text-xs">📞</span>
+                    Liên Hệ & Giờ Phục Vụ
+                  </h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Hotline Đặt Món / Hỗ Trợ *</label>
+                      <div className="relative">
+                        <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          required
+                          value={storeForm.hotline || ''}
+                          onChange={e => setStoreForm({ ...storeForm, hotline: e.target.value })}
+                          placeholder="0947 007 881"
+                          className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-[#1a5c2a] focus:outline-none focus:border-[#1a5c2a]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Số Zalo / Link Zalo Tư Vấn</label>
+                      <input
+                        type="text"
+                        value={storeForm.zalo || ''}
+                        onChange={e => setStoreForm({ ...storeForm, zalo: e.target.value })}
+                        placeholder="0947 007 881"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-blue-600 focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">Giờ Mở Cửa Hoạt Động</label>
+                    <div className="relative">
+                      <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        value={storeForm.openHours || ''}
+                        onChange={e => setStoreForm({ ...storeForm, openHours: e.target.value })}
+                        placeholder="10:00 - 20:30 (Mở cửa tất cả các ngày trong tuần)"
+                        className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">Địa Chỉ Đầy Đủ (Khu vực, Phường, Thành phố)</label>
+                    <div className="relative">
+                      <MapPin size={14} className="absolute left-3 top-3 text-gray-400" />
+                      <textarea
+                        rows={2}
+                        value={storeForm.address || ''}
+                        onChange={e => setStoreForm({ ...storeForm, address: e.target.value })}
+                        placeholder="1 Ngô Sĩ Liên, Khu Phố 2, Phường Tân Biên, TP. Biên Hòa, Tỉnh Đồng Nai"
+                        className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[#1a5c2a] resize-none font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">Địa Chỉ Rút Gọn (In hóa đơn K80 & chân trang)</label>
+                    <input
+                      type="text"
+                      value={storeForm.shortAddress || ''}
+                      onChange={e => setStoreForm({ ...storeForm, shortAddress: e.target.value })}
+                      placeholder="1 Ngô Sĩ Liên, KP2, Hố Nai, Đồng Nai"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-[#1a5c2a]"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Phí Vận Chuyển & WiFi Quán */}
+                <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200 shadow-sm space-y-3">
+                  <h3 className="font-black text-sm text-gray-800 flex items-center gap-2 border-b pb-2">
+                    <span className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs">🛵</span>
+                    Phí Giao Hàng & Tiện Ích Quán
+                  </h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Phí Giao Hàng Tiêu Chuẩn (VNĐ)</label>
+                      <input
+                        type="number"
+                        min={0}
+                        step={1000}
+                        value={storeForm.deliveryFee || 0}
+                        onChange={e => setStoreForm({ ...storeForm, deliveryFee: Number(e.target.value) })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-black text-[#1a5c2a] focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Đơn Tối Thiểu Được Miễn Phí Ship (VNĐ)</label>
+                      <input
+                        type="number"
+                        min={0}
+                        step={5000}
+                        value={storeForm.minFreeDelivery || 0}
+                        onChange={e => setStoreForm({ ...storeForm, minFreeDelivery: Number(e.target.value) })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-black text-amber-700 focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Tên WiFi Tại Quán</label>
+                      <div className="relative">
+                        <Wifi size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          value={storeForm.wifiName || ''}
+                          onChange={e => setStoreForm({ ...storeForm, wifiName: e.target.value })}
+                          placeholder="KUTIN_FOOD_DRINK_GUEST"
+                          className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-medium text-gray-800 focus:outline-none focus:border-[#1a5c2a]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 block mb-1">Mật Khẩu WiFi</label>
+                      <input
+                        type="text"
+                        value={storeForm.wifiPass || ''}
+                        onChange={e => setStoreForm({ ...storeForm, wifiPass: e.target.value })}
+                        placeholder="kutinfood2024"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs font-mono font-bold text-gray-800 focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT COLUMN: Google Maps Config & Live Interactive Preview (5 cols) */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <h3 className="font-black text-sm text-gray-800 flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-lg bg-red-100 text-red-700 flex items-center justify-center text-xs">🗺️</span>
+                      Vị Trí Bản Đồ Google Maps
+                    </h3>
+                    <span className="text-[10px] bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-bold">
+                      Trực quan
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">
+                      Đường Dẫn Nhúng Bản Đồ (Google Maps Iframe Embed)
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={storeForm.mapEmbedUrl || ''}
+                      onChange={e => handleMapEmbedUrlChange(e.target.value)}
+                      placeholder="Dán link src hoặc dán toàn bộ mã <iframe> từ Google Maps..."
+                      className="w-full px-3 py-2 rounded-xl border border-gray-200 text-[11px] font-mono text-gray-700 focus:outline-none focus:border-[#1a5c2a] resize-none"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">
+                      💡 Mẹo: Bạn có thể dán toàn bộ thẻ <code>&lt;iframe src="..."&gt;</code> từ Google Maps, hệ thống sẽ tự động tách đường dẫn chuẩn.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">
+                      Đường Dẫn Mở Chỉ Đường Google Maps (Cho Khách Mở App)
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={storeForm.mapDirectionUrl || ''}
+                        onChange={e => setStoreForm({ ...storeForm, mapDirectionUrl: e.target.value })}
+                        placeholder="https://maps.google.com/?q=..."
+                        className="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-xs text-gray-700 focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                      {storeForm.mapDirectionUrl && (
+                        <a
+                          href={storeForm.mapDirectionUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-gray-100 hover:bg-[#1a5c2a] hover:text-white text-gray-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 flex-shrink-0"
+                          title="Mở thử nghiệm trên Google Maps"
+                        >
+                          <ExternalLink size={13} /> Mở Thử
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* LIVE PREVIEW CONTAINER */}
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-black text-gray-800 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Khung Xem Trước Trực Tiếp (Live Preview)
+                      </p>
+                      <span className="text-[10px] text-gray-400">Tọa độ quán KUTIN</span>
+                    </div>
+
+                    <div className="rounded-2xl overflow-hidden border-2 border-emerald-500/30 shadow-md bg-gray-100 h-64 sm:h-72 relative">
+                      {storeForm.mapEmbedUrl ? (
+                        <iframe
+                          src={storeForm.mapEmbedUrl}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          title="Bản đồ quán KUTIN Food & Drink"
+                          className="w-full h-full"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400 p-4 text-center">
+                          <MapPin size={36} className="mb-2 text-gray-300" />
+                          <p className="font-bold text-xs">Chưa có liên kết bản đồ</p>
+                          <p className="text-[10px]">Vui lòng nhập đường dẫn nhúng iframe phía trên để xem trước</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action card bottom */}
+                <div className="bg-gradient-to-r from-[#1a5c2a] to-[#2d7a40] text-white p-5 rounded-2xl sm:rounded-3xl shadow-lg space-y-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#f5c518] text-[#1a5c2a] flex items-center justify-center font-black text-base shadow">
+                      ✓
+                    </div>
+                    <div>
+                      <p className="font-black text-sm text-[#f5c518]">Lưu Thay Đổi Ngay</p>
+                      <p className="text-[11px] text-white/80">Tất cả khách truy cập sẽ thấy thông tin mới nhất</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleResetStoreInfo}
+                      className="flex-1 py-3 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors"
+                    >
+                      Khôi Phục Gốc
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-[2] py-3 rounded-xl sm:rounded-2xl bg-[#f5c518] hover:bg-[#fdd835] text-[#1a5c2a] font-black text-xs shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-1.5"
+                    >
+                      <Check size={16} strokeWidth={3} /> Lưu Thông Tin Quán
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
           </div>
         )}
       </main>

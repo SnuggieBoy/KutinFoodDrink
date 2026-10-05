@@ -14,8 +14,11 @@ export default function Navbar() {
   const [staffDropdownOpen, setStaffDropdownOpen] = useState(false)
 
   const { totalItems } = useCart()
-  const { isAdminAuthenticated, logoutAdmin } = useRestaurant()
+  const { isAdminAuthenticated, logoutAdmin, storeInfo } = useRestaurant()
   const location = useLocation()
+
+  const hotline = storeInfo?.hotline || '0947 007 881'
+  const telHref = `tel:${hotline.replace(/\s+/g, '')}`
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 30)
@@ -47,7 +50,7 @@ export default function Navbar() {
               K
             </div>
             <div className="leading-none">
-              <p className="font-black text-white text-xl tracking-wider drop-shadow">KUTIN</p>
+              <p className="font-black text-white text-xl tracking-wider drop-shadow">{storeInfo?.name?.split(' ')[0] || 'KUTIN'}</p>
               <p className="text-[#f5c518] text-[10px] font-semibold tracking-widest">FOOD & DRINK</p>
             </div>
           </Link>
@@ -81,20 +84,20 @@ export default function Navbar() {
                 </button>
 
                 {staffDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn">
+                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn">
                     <Link
                       to="/pos"
                       onClick={() => setStaffDropdownOpen(false)}
                       className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-gray-700 hover:bg-emerald-50 hover:text-[#1a5c2a]"
                     >
-                      💻 POS Thu Ngân
+                      💻 Máy Bán Hàng Thu Ngân
                     </Link>
                     <Link
                       to="/admin"
                       onClick={() => setStaffDropdownOpen(false)}
                       className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-gray-700 hover:bg-emerald-50 hover:text-[#1a5c2a]"
                     >
-                      📊 Báo Cáo / Admin
+                      📊 Báo Cáo & Quản Trị
                     </Link>
                     <button
                       onClick={() => {
@@ -121,11 +124,11 @@ export default function Navbar() {
 
             {/* Hotline */}
             <a
-              href="tel:0947007881"
+              href={telHref}
               className="hidden md:flex items-center gap-1.5 bg-[#f5c518] text-[#1a5c2a] px-3.5 py-1.5 rounded-full text-sm font-bold hover:bg-[#fdd835] transition-colors shadow-sm"
             >
               <Phone size={14} />
-              0947 007 881
+              {hotline}
             </a>
 
             {/* Cart Button */}
@@ -178,24 +181,24 @@ export default function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className="block bg-[#1a5c2a] text-[#f5c518] py-2 text-center rounded-lg font-bold text-xs"
                   >
-                    💻 Máy Bán Hàng POS
+                    💻 Máy Bán Hàng Thu Ngân
                   </Link>
                   <Link
                     to="/admin"
                     onClick={() => setMobileOpen(false)}
                     className="block bg-[#1a5c2a] text-white py-2 text-center rounded-lg font-bold text-xs"
                   >
-                    📊 Dashboard Quản Lý
+                    📊 Báo Cáo & Quản Trị
                   </Link>
                 </div>
               )}
 
               <a
-                href="tel:0947007881"
+                href={telHref}
                 className="flex items-center justify-center gap-2 bg-[#f5c518] text-[#1a5c2a] py-2 rounded-lg font-bold"
               >
                 <Phone size={16} />
-                Gọi: 0947 007 881
+                Gọi: {hotline}
               </a>
             </div>
           </div>
