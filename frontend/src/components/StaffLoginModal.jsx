@@ -116,12 +116,6 @@ export default function StaffLoginModal({ isOpen, onClose }) {
               {error && <p className="text-red-500 text-xs mt-1.5 font-medium">Mật khẩu không chính xác!</p>}
             </div>
 
-            <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-center">
-              <p className="text-amber-800 text-[11px] font-medium">
-                Mật khẩu demo: <span className="font-mono font-bold">kutin2024</span>
-              </p>
-            </div>
-
             <button
               type="submit"
               className="w-full bg-[#1a5c2a] hover:bg-[#2d7a40] text-white py-3 rounded-2xl font-black text-xs shadow-md transition-all active:scale-95"

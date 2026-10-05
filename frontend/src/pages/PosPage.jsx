@@ -6,7 +6,7 @@ import {
   Clock, ArrowLeft, ArrowRight, LayoutGrid, Flame, Check, Sparkles, ChefHat
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { getActiveMenu, categories, formatPrice } from '../data/menuData'
+import { getActiveMenu, menuItems, categories, formatPrice } from '../data/menuData'
 import SepayQRModal from '../components/SepayQRModal'
 import ReceiptPrintModal from '../components/ReceiptPrintModal'
 import { useRestaurant } from '../context/RestaurantContext'
@@ -261,9 +261,9 @@ export default function PosPage() {
   // POS Security Lock Guard if not authenticated
   if (!isAdminAuthenticated) {
     return (
-      <div className="h-screen w-screen bg-[#0f3a1a] flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl text-center space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#f5c518] text-[#1a5c2a] flex items-center justify-center mx-auto text-3xl font-black shadow-lg">
+      <div className="min-h-screen w-full bg-[#0f3a1a] flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-sm shadow-2xl text-center space-y-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#f5c518] text-[#1a5c2a] flex items-center justify-center mx-auto text-2xl sm:text-3xl font-black shadow-lg">
             K
           </div>
           <div>
@@ -295,8 +295,6 @@ export default function PosPage() {
             </button>
           </form>
 
-          <p className="text-[11px] text-gray-400">Pass demo: kutin2024</p>
-
           <div className="pt-2 border-t">
             <Link
               to="/"
@@ -311,7 +309,7 @@ export default function PosPage() {
   }
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-gray-100 overflow-hidden font-sans">
+    <div className="h-[100dvh] w-full flex flex-col bg-gray-100 overflow-hidden font-sans">
       {/* ===== POS TOPBAR ===== */}
       <header className="bg-[#1a5c2a] text-white h-14 px-4 flex items-center justify-between shadow-md z-20 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -465,7 +463,7 @@ export default function PosPage() {
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  Tất cả ({menuItems.length})
+                  Tất cả ({posMenuItems.length})
                 </button>
                 {categories.map(cat => (
                   <button

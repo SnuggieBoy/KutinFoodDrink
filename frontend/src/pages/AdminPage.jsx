@@ -369,9 +369,6 @@ export default function AdminPage() {
               Đăng Nhập Dashboard
             </button>
           </form>
-          <div className="mt-4 p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-center">
-            <p className="text-amber-800 text-xs font-semibold">Mật khẩu demo: <span className="font-mono font-bold">kutin2024</span></p>
-          </div>
           <div className="mt-4 text-center">
             <Link to="/" className="text-xs text-gray-400 hover:text-[#1a5c2a] transition-colors font-medium">
               ← Quay về trang chủ khách hàng

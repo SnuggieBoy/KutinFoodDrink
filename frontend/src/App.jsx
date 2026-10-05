@@ -9,13 +9,15 @@ import PosPage from './pages/PosPage'
 import { RestaurantProvider } from './context/RestaurantContext'
 import MobileBottomNav from './components/MobileBottomNav'
 import ScrollToTop from './components/ScrollToTop'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   return (
-    <RestaurantProvider>
-      <CartProvider>
-        <ScrollToTop />
-        <Routes>
+    <ErrorBoundary>
+      <RestaurantProvider>
+        <CartProvider>
+          <ScrollToTop />
+          <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/order" element={<OrderPage />} />
@@ -26,7 +28,8 @@ function App() {
         <MobileBottomNav />
       </CartProvider>
     </RestaurantProvider>
-  )
+  </ErrorBoundary>
+)
 }
 
 export default App
