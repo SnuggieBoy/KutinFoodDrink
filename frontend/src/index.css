@@ -10,9 +10,11 @@
   --color-kutin-cream: #fdf8f0;
   --color-kutin-dark: #1a1a1a;
 
-  --font-display: "Playfair Display", serif;
-  --font-body: "Inter", sans-serif;
-  --font-vietnamese: "Be Vietnam Pro", sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Plus Jakarta Sans", "Be Vietnam Pro", sans-serif;
+  --font-display: "Plus Jakarta Sans", "Be Vietnam Pro", sans-serif;
+  --font-body: "Plus Jakarta Sans", "Be Vietnam Pro", sans-serif;
+  --font-vietnamese: "Be Vietnam Pro", "Plus Jakarta Sans", sans-serif;
 }
 
 @layer base {
@@ -26,16 +28,23 @@
     overflow-x: hidden;
     position: relative;
     -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html {
     scroll-behavior: smooth;
-    font-family: var(--font-vietnamese), var(--font-body), sans-serif;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   body {
     background-color: #ffffff;
     color: var(--color-kutin-dark);
+    font-family: var(--font-sans);
+    line-height: 1.55;
+    letter-spacing: -0.012em;
   }
 
   #root {
@@ -43,6 +52,17 @@
     max-width: 100vw;
     overflow-x: hidden;
     position: relative;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Currency, stats and tabular numbers */
+  .tabular-nums, .price-tag, .font-numeric {
+    font-variant-numeric: tabular-nums;
   }
 
   ::-webkit-scrollbar {

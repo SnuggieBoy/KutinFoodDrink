@@ -63,15 +63,15 @@ export default function MenuCard({ item, compact = false }) {
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-bold text-gray-800 text-sm leading-snug line-clamp-2 flex-1">{item.name}</h3>
+      <div className="p-3.5 sm:p-4 flex flex-col flex-1">
+        <h3 className="font-extrabold text-gray-900 text-sm sm:text-[15px] leading-snug line-clamp-2 flex-1 tracking-tight">{item.name}</h3>
         {!compact && item.description && (
-          <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.description}</p>
+          <p className="text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">{item.description}</p>
         )}
 
-        <div className="flex items-center justify-between mt-3 gap-2">
+        <div className="flex items-center justify-between mt-3 pt-1.5 border-t border-gray-100 gap-2">
           <div>
-            <p className="text-[#1a5c2a] font-black text-base">{formatPrice(item.price)}</p>
+            <p className="text-[#1a5c2a] font-black text-base sm:text-lg tabular-nums tracking-tight">{formatPrice(item.price)}</p>
             <div className="flex items-center gap-0.5 mt-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} size={10} fill="#f5c518" stroke="none" />
@@ -81,7 +81,7 @@ export default function MenuCard({ item, compact = false }) {
           <button
             disabled={!item.isAvailable}
             onClick={() => addItem(item)}
-            className="flex items-center gap-1 bg-[#1a5c2a] text-white px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#2d7a40] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg active:scale-95"
+            className="flex items-center gap-1 bg-[#1a5c2a] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold hover:bg-[#2d7a40] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-md active:scale-95"
           >
             <Plus size={14} />
             Thêm
