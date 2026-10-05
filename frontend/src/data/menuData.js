@@ -156,6 +156,24 @@ export const saveActiveMenu = (items) => {
   } catch (e) {}
 }
 
+export const categoryImages = {
+  'pha-lau': 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=500&q=80',
+  'com-tron': 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=500&q=80',
+  'com-chien': 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&q=80',
+  'mi-cay': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&q=80',
+  'mi-xao': 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=500&q=80',
+  'mi-mien-tron': 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&q=80',
+  'nui': 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&q=80',
+  'tokpokki': 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=500&q=80',
+  'ga-xu': 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=500&q=80',
+  'bach-tuoc': 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=500&q=80',
+  'lau': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&q=80',
+  'an-vat': 'https://images.unsplash.com/photo-1530982011887-3cc11cc85693?w=500&q=80',
+  'canh-kim-chi': 'https://images.unsplash.com/photo-1547592180-85f173990554?w=500&q=80',
+  'nuoc': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80',
+  default: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80',
+}
+
 export const formatPrice = (price) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)
 

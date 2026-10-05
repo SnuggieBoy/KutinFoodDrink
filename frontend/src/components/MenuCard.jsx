@@ -33,7 +33,7 @@ const categoryImages = {
 
 export default function MenuCard({ item, compact = false }) {
   const { addItem } = useCart()
-  const imgSrc = categoryImages[item.category] || categoryImages.default
+  const imgSrc = item.image || categoryImages[item.category] || categoryImages.default
 
   const displayBadge = item.badge === 'Hot' ? '🔥 Món Hot' : item.badge === 'VIP' ? '👑 Thượng Hạng' : item.badge
 
@@ -46,6 +46,9 @@ export default function MenuCard({ item, compact = false }) {
           alt={item.name}
           className={`w-full object-cover transition-transform duration-500 hover:scale-110 ${compact ? 'h-40' : 'h-48'}`}
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = categoryImages[item.category] || categoryImages.default
+          }}
         />
         {item.badge && (
           <span className={`absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full ${badgeColors[item.badge] || 'bg-gray-600 text-white'}`}>

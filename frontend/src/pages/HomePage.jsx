@@ -1,10 +1,11 @@
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown, Phone, MapPin, Star, Truck, Clock, Shield } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MenuCard from '../components/MenuCard'
-import { featuredItems, categories } from '../data/menuData'
+import { featuredItems, categories, getActiveMenu } from '../data/menuData'
 import { useRestaurant } from '../context/RestaurantContext'
 
 const fadeUp = {
@@ -26,6 +27,23 @@ const reviews = [
 
 export default function HomePage() {
   const { storeInfo } = useRestaurant()
+  const [menuList, setMenuList] = useState(() => getActiveMenu())
+
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'kutin_custom_menu') {
+        setMenuList(getActiveMenu())
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
+
+  const displayFeatured = useMemo(() => {
+    const featured = menuList.filter(i => i.isFeatured || i.badge === 'Hot' || i.badge === 'Bán chạy')
+    return (featured.length > 0 ? featured : menuList).slice(0, 8)
+  }, [menuList])
+
   const openHours = storeInfo?.openHours || '10:00 - 20:30 hàng ngày'
   const tagline = storeInfo?.tagline || '"Ngon hết sẩy!"'
   const hotline = storeInfo?.hotline || '0947 007 881'
@@ -274,7 +292,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
           >
-            {featuredItems.slice(0, 8).map(item => (
+            {displayFeatured.map(item => (
               <motion.div key={item.id} variants={fadeUp}>
                 <MenuCard item={item} />
               </motion.div>

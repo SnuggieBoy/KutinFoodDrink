@@ -6,10 +6,11 @@ import {
   Flame, CreditCard, Banknote, ArrowUpRight, Search, ShieldCheck, Check,
   Plus, Edit2, Trash2, Filter, RotateCcw, LayoutGrid, List, AlertTriangle,
   ArrowRight, X, Sparkles, CheckSquare, Coffee, Utensils, Menu as MenuIcon,
-  ChevronRight, ExternalLink, HelpCircle, Store, MapPin, Phone, Wifi, Navigation, Globe
+  ChevronRight, ExternalLink, HelpCircle, Store, MapPin, Phone, Wifi, Navigation, Globe,
+  Upload, Image as ImageIcon, Link2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { menuItems, formatPrice, categories, getActiveMenu, saveActiveMenu } from '../data/menuData'
+import { menuItems, formatPrice, categories, getActiveMenu, saveActiveMenu, categoryImages } from '../data/menuData'
 import ReceiptPrintModal from '../components/ReceiptPrintModal'
 import { useRestaurant, DEFAULT_STORE_INFO } from '../context/RestaurantContext'
 
@@ -156,12 +157,14 @@ export default function AdminPage() {
   // Menu Modals (Create & Edit)
   const [isDishModalOpen, setIsDishModalOpen] = useState(false)
   const [editingDish, setEditingDish] = useState(null)
+  const [isCompressingImg, setIsCompressingImg] = useState(false)
   const [dishForm, setDishForm] = useState({
     name: '',
     category: 'mi-cay',
     price: '',
     badge: '',
     description: '',
+    image: '',
     isAvailable: true,
   })
 
@@ -236,6 +239,7 @@ export default function AdminPage() {
       price: '',
       badge: '',
       description: '',
+      image: '',
       isAvailable: true,
     })
     setIsDishModalOpen(true)
@@ -249,9 +253,68 @@ export default function AdminPage() {
       price: dish.price,
       badge: dish.badge || '',
       description: dish.description || '',
+      image: dish.image || '',
       isAvailable: dish.isAvailable,
     })
     setIsDishModalOpen(true)
+  }
+
+  const handleImageFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Vui lòng chọn tệp hình ảnh hợp lệ (JPG, PNG, WEBP)!')
+      return
+    }
+
+    setIsCompressingImg(true)
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const img = new Image()
+      img.onload = () => {
+        try {
+          const maxDim = 600
+          let width = img.width
+          let height = img.height
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width)
+              width = maxDim
+            } else {
+              width = Math.round((width * maxDim) / height)
+              height = maxDim
+            }
+          }
+
+          const canvas = document.createElement('canvas')
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, width, height)
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75)
+          setDishForm(prev => ({ ...prev, image: compressedDataUrl }))
+          toast.success('Đã tải và tối ưu ảnh món ăn thành công!')
+        } catch (err) {
+          console.error(err)
+          toast.error('Không thể tối ưu ảnh!')
+        } finally {
+          setIsCompressingImg(false)
+        }
+      }
+      img.onerror = () => {
+        toast.error('Không thể đọc file ảnh!')
+        setIsCompressingImg(false)
+      }
+      img.src = event.target.result
+    }
+    reader.onerror = () => {
+      toast.error('Lỗi khi mở tệp!')
+      setIsCompressingImg(false)
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleSaveDish = (e) => {
@@ -278,6 +341,7 @@ export default function AdminPage() {
               price: numPrice,
               badge: dishForm.badge || undefined,
               description: dishForm.description.trim(),
+              image: dishForm.image?.trim() || undefined,
               isAvailable: dishForm.isAvailable,
             }
           : item
@@ -292,6 +356,7 @@ export default function AdminPage() {
         price: numPrice,
         badge: dishForm.badge || undefined,
         description: dishForm.description.trim(),
+        image: dishForm.image?.trim() || undefined,
         isAvailable: dishForm.isAvailable,
         isFeatured: dishForm.badge === 'Hot' || dishForm.badge === 'Bán chạy',
       }
@@ -1074,6 +1139,7 @@ export default function AdminPage() {
                     <table className="w-full text-left text-xs min-w-[620px]">
                       <thead>
                         <tr className="bg-gray-50/80 text-gray-500 font-bold border-b border-gray-200">
+                          <th className="py-3 px-3 text-center w-14">Hình</th>
                           <th className="py-3 px-4">Tên Món Ăn</th>
                           <th className="py-3 px-3">Danh Mục</th>
                           <th className="py-3 px-3">Giá Bán</th>
@@ -1088,6 +1154,17 @@ export default function AdminPage() {
                             key={item.id}
                             className={`hover:bg-gray-50/80 transition-colors ${!item.isAvailable ? 'bg-red-50/30' : ''}`}
                           >
+                            <td className="py-2.5 px-3 text-center">
+                              <div className="w-11 h-11 mx-auto rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0">
+                                <img
+                                  src={item.image || categoryImages[item.category] || categoryImages.default}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => { e.currentTarget.src = categoryImages[item.category] || categoryImages.default }}
+                                  loading="lazy"
+                                />
+                              </div>
+                            </td>
                             <td className="py-3 px-4">
                               <div className="font-bold text-gray-900">{item.name}</div>
                               {item.description && (
@@ -1160,11 +1237,18 @@ export default function AdminPage() {
                   {filteredMenu.map(item => (
                     <div
                       key={item.id}
-                      className={`bg-white rounded-2xl p-3.5 border border-gray-200 shadow-sm flex flex-col gap-2.5 ${
+                      className={`bg-white rounded-2xl p-3 border border-gray-200 shadow-sm flex flex-col gap-2.5 ${
                         !item.isAvailable ? 'bg-red-50/20' : ''
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-3">
+                        <img
+                          src={item.image || categoryImages[item.category] || categoryImages.default}
+                          alt={item.name}
+                          className="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0 shadow-sm"
+                          onError={(e) => { e.currentTarget.src = categoryImages[item.category] || categoryImages.default }}
+                          loading="lazy"
+                        />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="font-bold text-xs text-gray-900 leading-tight">{item.name}</span>
@@ -1177,10 +1261,10 @@ export default function AdminPage() {
                           <span className="text-[10px] text-gray-400 mt-0.5 block">
                             {categories.find(c => c.id === item.category)?.name}
                           </span>
+                          <span className="font-black text-xs text-[#1a5c2a] mt-1 block">
+                            {formatPrice(item.price)}
+                          </span>
                         </div>
-                        <span className="font-black text-sm text-[#1a5c2a] flex-shrink-0">
-                          {formatPrice(item.price)}
-                        </span>
                       </div>
 
                       {item.description && (
@@ -1229,17 +1313,25 @@ export default function AdminPage() {
                 {filteredMenu.map(item => (
                   <div
                     key={item.id}
-                    className={`bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all ${
+                    className={`bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-3.5 border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all ${
                       !item.isAvailable ? 'bg-gray-50 opacity-70' : ''
                     }`}
                   >
                     <div>
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg">
+                      {/* Dish Photo Banner */}
+                      <div className="relative h-36 rounded-xl sm:rounded-2xl overflow-hidden mb-2.5 bg-gray-100 border border-gray-100 group">
+                        <img
+                          src={item.image || categoryImages[item.category] || categoryImages.default}
+                          alt={item.name}
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                          onError={(e) => { e.currentTarget.src = categoryImages[item.category] || categoryImages.default }}
+                          loading="lazy"
+                        />
+                        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-lg">
                           {categories.find(c => c.id === item.category)?.name}
                         </span>
                         {item.badge && (
-                          <span className="bg-red-500 text-white text-[9px] font-black px-2 py-0.2 rounded-full">
+                          <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow">
                             {item.badge}
                           </span>
                         )}
@@ -2085,6 +2177,95 @@ export default function AdminPage() {
                     <option value="1">🟢 Còn bán (Có sẵn)</option>
                     <option value="0">🔴 Tạm hết món</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Hình ảnh món ăn (Tải từ máy / điện thoại hoặc Dán Link online) */}
+              <div className="bg-gray-50/90 p-3 sm:p-3.5 rounded-2xl border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-black text-gray-800 flex items-center gap-1.5">
+                    <ImageIcon size={14} className="text-[#1a5c2a]" />
+                    Hình ảnh món ăn
+                  </label>
+                  {dishForm.image ? (
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                      ✓ Đã có ảnh riêng
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-gray-500 bg-gray-200/80 px-2 py-0.5 rounded-full">
+                      Mặc định theo danh mục
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 items-center">
+                  {/* Khung xem trước trực tiếp */}
+                  <div className="relative w-28 h-28 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-white border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center group shadow-sm">
+                    <img
+                      src={dishForm.image || categoryImages[dishForm.category] || categoryImages.default}
+                      alt="Xem trước món"
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      onError={(e) => {
+                        e.currentTarget.src = categoryImages[dishForm.category] || categoryImages.default
+                      }}
+                    />
+                    {dishForm.image && (
+                      <button
+                        type="button"
+                        onClick={() => setDishForm(prev => ({ ...prev, image: '' }))}
+                        className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md transition-colors"
+                        title="Xóa ảnh riêng (trở về ảnh mặc định)"
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Các tùy chọn nhập ảnh */}
+                  <div className="flex-1 w-full space-y-2">
+                    {/* Nút bấm tải ảnh từ thiết bị */}
+                    <div>
+                      <label className="cursor-pointer flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-white border border-dashed border-gray-300 hover:border-[#1a5c2a] hover:bg-emerald-50/40 text-gray-700 hover:text-[#1a5c2a] text-xs font-bold transition-all shadow-sm active:scale-95">
+                        <Upload size={14} className="text-[#1a5c2a]" />
+                        <span>{isCompressingImg ? 'Đang nén ảnh...' : 'Tải ảnh từ máy / điện thoại'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageFileChange}
+                          disabled={isCompressingImg}
+                        />
+                      </label>
+                      <p className="text-[10px] text-gray-400 mt-0.5 text-center sm:text-left">
+                        Hỗ trợ JPG, PNG, WEBP. Tự động nén siêu nhẹ để lưu mượt mà.
+                      </p>
+                    </div>
+
+                    {/* Ô dán link URL online */}
+                    <div className="relative">
+                      <input
+                        type="url"
+                        placeholder="Hoặc dán link ảnh online (https://...)"
+                        value={dishForm.image}
+                        onChange={e => setDishForm(prev => ({ ...prev, image: e.target.value }))}
+                        className="w-full pl-7 pr-3 py-1.5 rounded-xl border border-gray-200 text-[11px] bg-white focus:outline-none focus:border-[#1a5c2a]"
+                      />
+                      <Link2 size={12} className="absolute left-2.5 top-2.5 text-gray-400" />
+                    </div>
+
+                    {/* Nút chọn nhanh ảnh mẫu theo danh mục */}
+                    {categoryImages[dishForm.category] && (
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setDishForm(prev => ({ ...prev, image: categoryImages[dishForm.category] }))}
+                          className="text-[10px] text-[#1a5c2a] hover:underline font-bold inline-flex items-center gap-1"
+                        >
+                          ⚡ Gợi ý: Dùng ảnh mẫu chuẩn của {categories.find(c => c.id === dishForm.category)?.name}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
