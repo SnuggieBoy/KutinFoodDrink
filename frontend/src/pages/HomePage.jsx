@@ -1,12 +1,15 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronDown, Phone, MapPin, Star, Truck, Clock, Shield } from 'lucide-react'
+import { ChevronDown, Phone, MapPin, Star, Truck, Clock, Shield, Ticket, Copy, Check, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import MenuCard from '../components/MenuCard'
 import { featuredItems, categories, getActiveMenu } from '../data/menuData'
+import { getActiveVouchers } from '../data/voucherData'
 import { useRestaurant } from '../context/RestaurantContext'
+
+const formatPrice = (val) => new Intl.NumberFormat('vi-VN').format(val || 0) + 'đ'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -28,11 +31,22 @@ const reviews = [
 export default function HomePage() {
   const { storeInfo } = useRestaurant()
   const [menuList, setMenuList] = useState(() => getActiveMenu())
+  const [vouchers, setVouchers] = useState(() => getActiveVouchers())
+  const [copiedCode, setCopiedCode] = useState('')
+
+  const handleCopyVoucher = (code) => {
+    navigator.clipboard?.writeText(code)
+    setCopiedCode(code)
+    setTimeout(() => setCopiedCode(''), 2500)
+  }
 
   useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === 'kutin_custom_menu') {
         setMenuList(getActiveMenu())
+      }
+      if (e.key === 'kutin_vouchers') {
+        setVouchers(getActiveVouchers())
       }
     }
     window.addEventListener('storage', handleStorage)
@@ -231,6 +245,94 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* ===== VOUCHERS / PROMOTIONS SECTION ===== */}
+      {vouchers.filter(v => v.isActive).length > 0 && (
+        <section className="py-12 sm:py-16 bg-gradient-to-r from-emerald-900 via-[#1a5c2a] to-emerald-950 text-white relative overflow-hidden shadow-inner">
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#f5c518_1px,transparent_1px)] [background-size:16px_16px]" />
+          
+          <div className="max-w-7xl mx-auto px-4 relative z-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase mb-2">
+                  <Sparkles size={13} /> Ưu Đãi Độc Quyền
+                </div>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white">
+                  Mã Giảm Giá Hôm Nay 🎟️
+                </h2>
+                <p className="text-emerald-100/80 text-xs sm:text-sm mt-1">
+                  Nhận ngay voucher giảm giá trực tiếp khi đặt món online hoặc ăn tại quán
+                </p>
+              </div>
+
+              <Link
+                to="/order"
+                className="inline-flex items-center gap-2 self-start md:self-auto px-5 py-2.5 rounded-2xl bg-[#f5c518] hover:bg-[#fdd835] text-[#1a5c2a] font-black text-xs sm:text-sm shadow-xl transition-transform active:scale-95"
+              >
+                🍜 Dùng Mã Đặt Món Ngay →
+              </Link>
+            </div>
+
+            {/* Voucher Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {vouchers.filter(v => v.isActive).slice(0, 4).map((voucher) => (
+                <div
+                  key={voucher.id}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col justify-between hover:border-amber-400/50 hover:bg-white/15 transition-all shadow-xl relative group"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-400 text-emerald-950">
+                        {voucher.type === 'percentage' ? `Giảm ${voucher.value}%` : voucher.type === 'freeship' ? 'Miễn Phí Ship' : `Giảm ${formatPrice(voucher.value)}`}
+                      </span>
+                      {voucher.endDate && (
+                        <span className="text-[10px] text-emerald-200 font-medium">
+                          Hạn: {voucher.endDate}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="font-black text-base text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+                      {voucher.title}
+                    </h3>
+                    
+                    <p className="text-xs text-emerald-100/70 line-clamp-2 min-h-[32px]">
+                      {voucher.description || (voucher.minOrder ? `Đơn tối thiểu ${formatPrice(voucher.minOrder)}` : 'Áp dụng cho mọi đơn')}
+                    </p>
+                  </div>
+
+                  {/* Copy Button & Code */}
+                  <div className="mt-4 pt-3 border-t border-white/15 flex items-center justify-between gap-2">
+                    <div className="px-2.5 py-1 rounded-lg bg-black/30 border border-dashed border-amber-400/60 font-mono font-black text-amber-300 text-xs tracking-wider">
+                      {voucher.code}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleCopyVoucher(voucher.code)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-black flex items-center gap-1 transition-all ${
+                        copiedCode === voucher.code
+                          ? 'bg-emerald-500 text-white'
+                          : 'bg-white text-gray-900 hover:bg-amber-400 hover:text-emerald-950'
+                      }`}
+                    >
+                      {copiedCode === voucher.code ? (
+                        <>
+                          <Check size={12} strokeWidth={3} /> Đã Chép
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={12} /> Sao Chép
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ===== CATEGORIES SECTION ===== */}
       <section className="py-20 bg-[#fdf8f0]">

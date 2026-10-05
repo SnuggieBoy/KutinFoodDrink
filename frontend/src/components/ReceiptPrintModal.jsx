@@ -133,7 +133,7 @@ export default function ReceiptPrintModal({ isOpen, onClose, order }) {
               </div>
               {order.discountAmount > 0 && (
                 <div className="flex justify-between text-red-600">
-                  <span>Giảm giá khuyến mãi:</span>
+                  <span>Giảm giá khuyến mãi{order.voucherCode ? ` (Mã: ${order.voucherCode})` : ''}:</span>
                   <span>-{formatPrice(order.discountAmount)}</span>
                 </div>
               )}

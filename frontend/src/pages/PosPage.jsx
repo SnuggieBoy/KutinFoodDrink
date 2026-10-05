@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { 
   Search, Plus, Minus, Trash2, Printer, QrCode, Banknote, 
   RotateCcw, UtensilsCrossed, ShoppingBag, CheckCircle, 
-  Clock, ArrowLeft, ArrowRight, LayoutGrid, Flame, Check, Sparkles, ChefHat
+  Clock, ArrowLeft, ArrowRight, LayoutGrid, Flame, Check, Sparkles, ChefHat,
+  Ticket, Tag, X
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { getActiveMenu, menuItems, categories, formatPrice } from '../data/menuData'
@@ -11,6 +12,7 @@ import SepayQRModal from '../components/SepayQRModal'
 import ReceiptPrintModal from '../components/ReceiptPrintModal'
 import { useRestaurant } from '../context/RestaurantContext'
 import { sound } from '../utils/sound'
+import { getActiveVouchers, validateVoucher, incrementVoucherUsage } from '../data/voucherData'
 
 const TABLES = [
   { id: 'T1', name: 'Bàn 01' },
@@ -69,8 +71,22 @@ export default function PosPage() {
   const [showCashModal, setShowCashModal] = useState(false)
   const [cashGiven, setCashGiven] = useState('')
 
-  // Discount
+  // Discount & Voucher
   const [discountPercent, setDiscountPercent] = useState(0)
+  const [selectedVoucher, setSelectedVoucher] = useState(null)
+  const [showPosVoucherModal, setShowPosVoucherModal] = useState(false)
+  const [posVouchersList, setPosVouchersList] = useState(() => getActiveVouchers())
+
+  // Sync vouchers
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'kutin_vouchers') {
+        setPosVouchersList(getActiveVouchers())
+      }
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
 
   // Sync active table cart
   const currentCart = tableOrders[activeTable] || []
@@ -191,12 +207,23 @@ export default function PosPage() {
         [activeTable]: [],
       }))
       setDiscountPercent(0)
+      setSelectedVoucher(null)
     }
   }
 
   // Calculate totals
   const subtotal = currentCart.reduce((sum, item) => sum + item.price * item.qty, 0)
-  const discountAmount = Math.round((subtotal * discountPercent) / 100)
+  const discountAmount = useMemo(() => {
+    if (selectedVoucher) {
+      const res = validateVoucher(selectedVoucher.code, subtotal, 0)
+      if (res.valid) return res.discountAmount
+    }
+    if (discountPercent > 0) {
+      return Math.round((subtotal * discountPercent) / 100)
+    }
+    return 0
+  }, [selectedVoucher, discountPercent, subtotal])
+
   const grandTotal = Math.max(0, subtotal - discountAmount)
 
   // Build current order object
@@ -208,6 +235,7 @@ export default function PosPage() {
       items: currentCart,
       totalAmount: subtotal,
       discountAmount,
+      voucherCode: selectedVoucher ? selectedVoucher.code : (discountPercent > 0 ? `${discountPercent}%` : null),
       grandTotal,
       paymentMethod,
       orderType: activeTable === 'MV' ? 'takeaway' : (activeTable === 'SHIP' ? 'delivery' : 'dine-in'),
@@ -231,12 +259,17 @@ export default function PosPage() {
     masterOrders.push(completedOrder)
     localStorage.setItem('kutin_orders', JSON.stringify(masterOrders))
 
+    if (selectedVoucher) {
+      incrementVoucherUsage(selectedVoucher.code)
+    }
+
     // Clear active table
     setTableOrders(prev => ({
       ...prev,
       [activeTable]: [],
     }))
     setDiscountPercent(0)
+    setSelectedVoucher(null)
     setShowSepayModal(false)
     setShowCashModal(false)
 
@@ -636,23 +669,58 @@ export default function PosPage() {
           {/* Cart Calculations & Actions */}
           <div className="border-t border-gray-200 bg-white p-3.5 space-y-2.5">
             {/* Discount selector */}
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Giảm giá:</span>
-              <div className="flex gap-1">
-                {[0, 5, 10, 15].map(pct => (
-                  <button
-                    key={pct}
-                    onClick={() => setDiscountPercent(pct)}
-                    className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-                      discountPercent === pct
-                        ? 'bg-[#1a5c2a] text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {pct}%
-                  </button>
-                ))}
+            <div className="space-y-1.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500 font-semibold">Khuyến mãi / Voucher:</span>
+                <button
+                  type="button"
+                  onClick={() => setShowPosVoucherModal(true)}
+                  className="px-2.5 py-1 rounded-xl bg-emerald-50 text-[#1a5c2a] border border-emerald-200 hover:bg-emerald-100 font-bold text-[11px] flex items-center gap-1 transition-all shadow-sm active:scale-95"
+                >
+                  <Ticket size={12} /> {selectedVoucher ? selectedVoucher.code : 'Chọn Voucher'}
+                </button>
               </div>
+
+              {selectedVoucher ? (
+                <div className="flex items-center justify-between bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="font-black text-xs text-emerald-900 truncate">
+                      🎟️ {selectedVoucher.code}
+                    </span>
+                    <span className="text-[10px] text-emerald-700">
+                      (-{formatPrice(discountAmount)})
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setSelectedVoucher(null)}
+                    className="text-red-500 hover:text-red-700 text-[10px] font-bold px-1.5 py-0.5 bg-white rounded border border-red-200"
+                  >
+                    Bỏ mã
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-gray-400">Hoặc theo %:</span>
+                  <div className="flex gap-1">
+                    {[0, 5, 10, 15].map(pct => (
+                      <button
+                        key={pct}
+                        onClick={() => {
+                          setSelectedVoucher(null)
+                          setDiscountPercent(pct)
+                        }}
+                        className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                          discountPercent === pct && !selectedVoucher
+                            ? 'bg-[#1a5c2a] text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {pct}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Totals */}
@@ -663,7 +731,9 @@ export default function PosPage() {
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between text-red-600 font-semibold">
-                  <span>Giảm giá ({discountPercent}%):</span>
+                  <span>
+                    Giảm giá {selectedVoucher ? `(Mã: ${selectedVoucher.code})` : `(${discountPercent}%)`}:
+                  </span>
                   <span>-{formatPrice(discountAmount)}</span>
                 </div>
               )}
@@ -959,6 +1029,86 @@ export default function PosPage() {
         onClose={() => setShowPrintModal(false)}
         order={currentPrintOrder}
       />
+
+      {/* ===== POS VOUCHER SELECTION MODAL ===== */}
+      {showPosVoucherModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div className="p-4 border-b flex items-center justify-between bg-[#1a5c2a] text-white">
+              <div className="flex items-center gap-2">
+                <Ticket size={20} className="text-[#f5c518]" />
+                <h3 className="font-black text-base">Chọn Voucher Cho Bàn Này</h3>
+              </div>
+              <button
+                onClick={() => setShowPosVoucherModal(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-2.5 flex-1 bg-gray-50">
+              {posVouchersList.filter(v => v.isActive).map(v => {
+                const isValidForCurrentCart = subtotal >= (v.minOrder || 0)
+                const isSelected = selectedVoucher?.code === v.code
+
+                return (
+                  <div
+                    key={v.id}
+                    className={`bg-white rounded-2xl p-3 border transition-all ${
+                      isSelected 
+                        ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20' 
+                        : isValidForCurrentCart 
+                          ? 'border-gray-200 hover:border-[#1a5c2a] shadow-sm' 
+                          : 'border-gray-200 opacity-60 bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2 py-0.5 rounded-lg bg-[#1a5c2a]/10 text-[#1a5c2a] font-black text-xs uppercase">
+                            {v.code}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                            {v.type === 'percentage' ? `Giảm ${v.value}%` : v.type === 'freeship' ? 'Freeship' : `Giảm ${formatPrice(v.value)}`}
+                          </span>
+                        </div>
+                        <h4 className="font-bold text-xs text-gray-900 mt-1">{v.title}</h4>
+                        <p className="text-[11px] text-gray-500 mt-0.5">{v.description}</p>
+                        {v.minOrder > 0 && (
+                          <p className="text-[10px] text-gray-400 mt-0.5">
+                            • Đơn tối thiểu: {formatPrice(v.minOrder)} {isValidForCurrentCart ? '✓ Đủ điều kiện' : `(Cần thêm ${formatPrice(v.minOrder - subtotal)})`}
+                          </p>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        disabled={!isValidForCurrentCart}
+                        onClick={() => {
+                          setSelectedVoucher(v)
+                          setDiscountPercent(0)
+                          setShowPosVoucherModal(false)
+                          toast.success(`Đã áp dụng mã "${v.code}"!`)
+                        }}
+                        className={`px-3 py-1.5 rounded-xl font-bold text-xs whitespace-nowrap transition-all flex-shrink-0 ${
+                          isSelected
+                            ? 'bg-emerald-600 text-white cursor-default'
+                            : isValidForCurrentCart
+                              ? 'bg-[#1a5c2a] text-white hover:bg-[#2d7a40] active:scale-95 shadow-sm'
+                              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        }`}
+                      >
+                        {isSelected ? 'Đang dùng' : 'Áp Dụng'}
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
