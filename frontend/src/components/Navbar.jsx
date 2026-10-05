@@ -43,15 +43,15 @@ export default function Navbar() {
             : 'bg-transparent py-4'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between relative">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 flex items-center justify-between relative">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group z-10 flex-shrink-0">
-            <div className="w-10 h-10 rounded-full bg-[#f5c518] flex items-center justify-center font-black text-[#1a5c2a] text-lg shadow-md group-hover:scale-110 transition-transform">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group z-10 flex-shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#f5c518] flex items-center justify-center font-black text-[#1a5c2a] text-base sm:text-lg shadow-md group-hover:scale-110 transition-transform">
               K
             </div>
             <div className="leading-none">
-              <p className="font-black text-white text-xl tracking-wider drop-shadow">{storeInfo?.name?.split(' ')[0] || 'KUTIN'}</p>
-              <p className="text-[#f5c518] text-[10px] font-semibold tracking-widest">FOOD & DRINK</p>
+              <p className="font-black text-white text-lg sm:text-xl tracking-wider drop-shadow">{storeInfo?.name?.split(' ')[0] || 'KUTIN'}</p>
+              <p className="text-[#f5c518] text-[9px] sm:text-[10px] font-semibold tracking-widest">FOOD & DRINK</p>
             </div>
           </Link>
 
@@ -71,15 +71,15 @@ export default function Navbar() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2.5 z-10 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 z-10 flex-shrink-0">
             {/* If Staff / Admin is logged in: Show discrete staff menu */}
             {isAdminAuthenticated ? (
               <div className="relative">
                 <button
                   onClick={() => setStaffDropdownOpen(!staffDropdownOpen)}
-                  className="flex items-center gap-1.5 bg-[#f5c518] text-[#1a5c2a] px-3 py-1.5 rounded-full text-xs font-black shadow-md hover:bg-[#fdd835] transition-all"
+                  className="flex items-center gap-1 bg-[#f5c518] text-[#1a5c2a] px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-black shadow-md hover:bg-[#fdd835] transition-all"
                 >
-                  <Shield size={13} />
+                  <Shield size={12} className="sm:w-[13px] sm:h-[13px]" />
                   <span>Quản Trị ▾</span>
                 </button>
 
@@ -134,11 +134,11 @@ export default function Navbar() {
             {/* Cart Button */}
             <button
               onClick={() => setCartOpen(true)}
-              className="relative p-2 text-white hover:text-[#f5c518] transition-colors"
+              className="relative p-1.5 sm:p-2 text-white hover:text-[#f5c518] transition-colors"
             >
-              <ShoppingCart size={24} />
+              <ShoppingCart size={21} className="sm:w-6 sm:h-6" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#f5c518] text-[#1a5c2a] rounded-full text-xs font-black flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 bg-[#f5c518] text-[#1a5c2a] rounded-full text-[10px] font-black flex items-center justify-center">
                   {totalItems > 9 ? '9+' : totalItems}
                 </span>
               )}
@@ -147,9 +147,9 @@ export default function Navbar() {
             {/* Mobile menu hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-white hover:text-[#f5c518] transition-colors"
+              className="md:hidden p-1.5 text-white hover:text-[#f5c518] transition-colors"
             >
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>

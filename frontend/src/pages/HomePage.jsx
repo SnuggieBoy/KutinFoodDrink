@@ -67,13 +67,13 @@ export default function HomePage() {
   const zaloHref = storeInfo?.zalo ? (storeInfo.zalo.startsWith('http') ? storeInfo.zalo : `https://zalo.me/${storeInfo.zalo.replace(/\s+/g, '')}`) : 'https://zalo.me/0947007881'
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden relative">
       <Navbar />
 
       {/* ===== HERO SECTION ===== */}
       <section
         id="hero"
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        className="relative min-h-[100dvh] sm:min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-24 sm:pt-24 sm:pb-14"
         style={{
           backgroundImage: `url('https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=1600&q=90')`,
           backgroundSize: 'cover',
@@ -84,40 +84,40 @@ export default function HomePage() {
         <div className="absolute inset-0 gradient-hero" />
 
         {/* Decorative circles */}
-        <div className="absolute top-20 right-20 w-64 h-64 rounded-full border-2 border-[#f5c518]/20 hidden lg:block" />
-        <div className="absolute bottom-20 left-10 w-40 h-40 rounded-full border-2 border-white/10 hidden lg:block" />
+        <div className="absolute top-20 right-20 w-64 h-64 rounded-full border-2 border-[#f5c518]/20 hidden lg:block pointer-events-none" />
+        <div className="absolute bottom-20 left-10 w-40 h-40 rounded-full border-2 border-white/10 hidden lg:block pointer-events-none" />
 
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          {/* Badge */}
+        <div className="relative z-10 text-center px-4 max-w-3xl mx-auto w-full">
+          {/* Badge giờ phục vụ (Tối ưu gọn gàng cho điện thoại) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 bg-[#f5c518]/20 border border-[#f5c518]/50 text-[#f5c518] px-4 py-1.5 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm"
+            className="inline-flex items-center gap-1.5 bg-[#f5c518]/20 border border-[#f5c518]/50 text-[#f5c518] px-3.5 py-1 rounded-full text-xs sm:text-sm font-bold mb-4 sm:mb-6 backdrop-blur-sm max-w-[90vw] truncate"
           >
-            <span className="animate-pulse">●</span>
-            Đang phục vụ: {openHours}
+            <span className="animate-pulse text-[10px]">●</span>
+            <span className="truncate">Đang phục vụ: {openHours.replace(/\(.*?\)/g, '').trim()}</span>
           </motion.div>
 
           {/* Logo mark */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex items-center justify-center gap-4 mb-2"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex items-center justify-center gap-4 mb-1 sm:mb-2"
           >
-            <div className="w-16 h-16 rounded-full bg-[#f5c518] flex items-center justify-center font-black text-[#1a5c2a] text-3xl shadow-2xl animate-float">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#f5c518] flex items-center justify-center font-black text-[#1a5c2a] text-2xl sm:text-3xl shadow-2xl animate-float">
               K
             </div>
           </motion.div>
 
-          {/* Title */}
+          {/* Title KUTIN */}
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             className="text-white font-black text-shadow"
-            style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', lineHeight: 1.05, letterSpacing: '-0.02em' }}
+            style={{ fontSize: 'clamp(2.6rem, 8.5vw, 6.5rem)', lineHeight: 1.05, letterSpacing: '-0.02em' }}
           >
             KUTIN
           </motion.h1>
@@ -125,47 +125,49 @@ export default function HomePage() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.35 }}
-            className="text-[#f5c518] font-bold tracking-[0.3em] text-lg md:text-2xl mb-2"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-[#f5c518] font-bold tracking-[0.25em] text-sm sm:text-xl md:text-2xl mb-1.5 sm:mb-2 uppercase"
           >
             FOOD & DRINK
           </motion.p>
 
+          {/* Menu Highlights Row (Không bị rớt chữ đơn lẻ) */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.45 }}
-            className="text-white/80 text-sm md:text-base tracking-widest mb-2"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-white/85 text-[11px] sm:text-sm md:text-base tracking-normal sm:tracking-wider mb-2 font-medium px-2 max-w-md mx-auto"
           >
             ĂN VẶT · MÌ CAY · TOKPOKKI · CƠM TRỘN · GÀ XÙ
           </motion.p>
 
+          {/* Slogan */}
           <motion.p
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.55 }}
-            className="text-[#f5c518] font-black italic text-2xl md:text-3xl mb-8 text-shadow-sm"
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="text-[#f5c518] font-black italic text-base sm:text-xl md:text-3xl mb-5 sm:mb-8 text-shadow-sm px-3 max-w-lg mx-auto leading-snug"
           >
             {tagline}
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons (Tối ưu cảm ứng mobile) */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.65 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 mb-6 sm:mb-8 w-full max-w-xs sm:max-w-none mx-auto"
           >
             <Link
               to="/order"
-              className="group bg-[#f5c518] text-[#1a5c2a] px-8 py-4 rounded-2xl font-black text-lg hover:bg-[#fdd835] transition-all shadow-2xl hover:shadow-[#f5c518]/30 hover:-translate-y-1 active:scale-95 flex items-center gap-2"
+              className="w-full sm:w-auto group bg-[#f5c518] text-[#1a5c2a] px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl font-black text-base sm:text-lg hover:bg-[#fdd835] transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
             >
               🍜 Đặt Món Ngay
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </Link>
             <Link
               to="/menu"
-              className="bg-white/15 backdrop-blur-sm text-white border-2 border-white/40 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-white/25 transition-all flex items-center gap-2"
+              className="w-full sm:w-auto bg-white/20 backdrop-blur-md text-white border border-white/40 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold text-base sm:text-lg hover:bg-white/30 transition-all flex items-center justify-center gap-2"
             >
               📋 Xem Menu
             </Link>
@@ -175,39 +177,39 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="flex flex-wrap items-center justify-center gap-3"
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs"
           >
-            <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm px-3 py-1.5 rounded-full">
-              <Truck size={14} className="text-[#f5c518]" />
-              Giao hàng tận nơi
+            <div className="flex items-center gap-1.5 bg-black/25 backdrop-blur-md border border-white/15 text-white px-3 py-1.5 rounded-full">
+              <Truck size={13} className="text-[#f5c518]" />
+              <span>Giao tận nơi</span>
             </div>
-            <a href="tel:0947007881" className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm px-3 py-1.5 rounded-full hover:bg-white/20 transition-colors">
-              <Phone size={14} className="text-[#f5c518]" />
-              0947 007 881
+            <a href="tel:0947007881" className="flex items-center gap-1.5 bg-black/25 backdrop-blur-md border border-white/15 text-white px-3 py-1.5 rounded-full hover:bg-black/40 transition-colors">
+              <Phone size={13} className="text-[#f5c518]" />
+              <span>0947 007 881</span>
             </a>
-            <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm px-3 py-1.5 rounded-full">
-              <MapPin size={14} className="text-[#f5c518]" />
-              Hố Nai, Đồng Nai
+            <div className="flex items-center gap-1.5 bg-black/25 backdrop-blur-md border border-white/15 text-white px-3 py-1.5 rounded-full">
+              <MapPin size={13} className="text-[#f5c518]" />
+              <span>Hố Nai, Biên Hòa</span>
             </div>
           </motion.div>
         </div>
 
-        {/* Scroll arrow */}
-        <a href="#about" className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white animate-bounce transition-colors">
-          <ChevronDown size={32} />
+        {/* Scroll arrow (Ẩn trên mobile để không bị BottomNav đè) */}
+        <a href="#about" className="hidden sm:block absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 hover:text-white animate-bounce transition-colors">
+          <ChevronDown size={28} />
         </a>
       </section>
 
       {/* ===== ABOUT / HIGHLIGHTS SECTION ===== */}
-      <section id="about" className="py-20 bg-white">
+      <section id="about" className="py-10 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             variants={stagger}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8"
           >
             {[
               {
@@ -235,11 +237,11 @@ export default function HomePage() {
               <motion.div
                 key={item.title}
                 variants={fadeUp}
-                className={`bg-gradient-to-br ${item.color} rounded-2xl p-8 border ${item.border} text-center card-hover`}
+                className={`bg-gradient-to-br ${item.color} rounded-2xl p-5 sm:p-8 border ${item.border} text-center card-hover`}
               >
-                <div className="text-5xl mb-4">{item.icon}</div>
-                <h3 className="text-[#1a5c2a] font-black text-2xl mb-3 tracking-wider">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{item.desc}</p>
+                <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{item.icon}</div>
+                <h3 className="text-[#1a5c2a] font-black text-xl sm:text-2xl mb-2 sm:mb-3 tracking-wider">{item.title}</h3>
+                <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -248,11 +250,11 @@ export default function HomePage() {
 
       {/* ===== VOUCHERS / PROMOTIONS SECTION ===== */}
       {vouchers.filter(v => v.isActive).length > 0 && (
-        <section className="py-12 sm:py-16 bg-gradient-to-r from-emerald-900 via-[#1a5c2a] to-emerald-950 text-white relative overflow-hidden shadow-inner">
+        <section className="py-10 sm:py-14 bg-gradient-to-r from-emerald-900 via-[#1a5c2a] to-emerald-950 text-white relative overflow-hidden shadow-inner">
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#f5c518_1px,transparent_1px)] [background-size:16px_16px]" />
           
           <div className="max-w-7xl mx-auto px-4 relative z-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8 gap-3 sm:gap-4">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase mb-2">
                   <Sparkles size={13} /> Ưu Đãi Độc Quyền
@@ -335,18 +337,18 @@ export default function HomePage() {
       )}
 
       {/* ===== CATEGORIES SECTION ===== */}
-      <section className="py-20 bg-[#fdf8f0]">
+      <section className="py-10 sm:py-16 bg-[#fdf8f0]">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <p className="text-[#f5c518] font-bold tracking-widest text-sm mb-2">THỰC ĐƠN ĐA DẠNG</p>
-            <h2 className="text-[#1a5c2a] font-black text-4xl md:text-5xl">Danh Mục Món Ăn</h2>
-            <div className="w-16 h-1 bg-[#f5c518] mx-auto mt-4 rounded-full"></div>
+            <p className="text-[#f5c518] font-bold tracking-widest text-xs sm:text-sm mb-1.5">THỰC ĐƠN ĐA DẠNG</p>
+            <h2 className="text-[#1a5c2a] font-black text-2xl sm:text-3xl md:text-4xl">Danh Mục Món Ăn</h2>
+            <div className="w-12 sm:w-16 h-1 bg-[#f5c518] mx-auto mt-3 rounded-full"></div>
           </motion.div>
 
           <motion.div
@@ -354,16 +356,16 @@ export default function HomePage() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4"
           >
             {categories.map((cat) => (
               <motion.div key={cat.id} variants={fadeUp}>
                 <Link
                   to={`/menu?cat=${cat.id}`}
-                  className="flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-gray-100 hover:border-[#1a5c2a] hover:shadow-lg hover:-translate-y-1 transition-all group text-center"
+                  className="flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 bg-white rounded-2xl border border-gray-100 hover:border-[#1a5c2a] hover:shadow-lg hover:-translate-y-1 transition-all group text-center"
                 >
-                  <span className="text-3xl group-hover:scale-110 transition-transform">{cat.icon}</span>
-                  <span className="text-xs font-bold text-gray-700 group-hover:text-[#1a5c2a] leading-tight">{cat.name}</span>
+                  <span className="text-2xl sm:text-3xl group-hover:scale-110 transition-transform">{cat.icon}</span>
+                  <span className="text-xs font-bold text-gray-700 group-hover:text-[#1a5c2a] leading-tight line-clamp-1">{cat.name}</span>
                 </Link>
               </motion.div>
             ))}
@@ -372,19 +374,19 @@ export default function HomePage() {
       </section>
 
       {/* ===== FEATURED DISHES ===== */}
-      <section className="py-20 bg-white">
+      <section className="py-10 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <p className="text-[#f5c518] font-bold tracking-widest text-sm mb-2">ĐƯỢC YÊU THÍCH NHẤT</p>
-            <h2 className="text-[#1a5c2a] font-black text-4xl md:text-5xl">Món Nổi Bật</h2>
-            <div className="w-16 h-1 bg-[#f5c518] mx-auto mt-4 rounded-full"></div>
-            <p className="text-gray-500 mt-4 max-w-xl mx-auto">Những món được khách hàng yêu thích và đặt nhiều nhất tại KUTIN</p>
+            <p className="text-[#f5c518] font-bold tracking-widest text-xs sm:text-sm mb-1.5">ĐƯỢC YÊU THÍCH NHẤT</p>
+            <h2 className="text-[#1a5c2a] font-black text-2xl sm:text-3xl md:text-4xl">Món Nổi Bật</h2>
+            <div className="w-12 sm:w-16 h-1 bg-[#f5c518] mx-auto mt-3 rounded-full"></div>
+            <p className="text-gray-500 text-xs sm:text-sm mt-3 max-w-xl mx-auto">Những món được khách hàng yêu thích và đặt nhiều nhất tại KUTIN</p>
           </motion.div>
 
           <motion.div
@@ -392,7 +394,7 @@ export default function HomePage() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
           >
             {displayFeatured.map(item => (
               <motion.div key={item.id} variants={fadeUp}>
@@ -401,10 +403,10 @@ export default function HomePage() {
             ))}
           </motion.div>
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-8 sm:mt-10">
             <Link
               to="/menu"
-              className="inline-flex items-center gap-2 bg-[#1a5c2a] text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[#2d7a40] transition-all shadow-lg hover:-translate-y-1"
+              className="inline-flex items-center gap-2 bg-[#1a5c2a] text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl font-bold text-base sm:text-lg hover:bg-[#2d7a40] transition-all shadow-lg hover:-translate-y-1"
             >
               Xem Tất Cả Menu →
             </Link>
@@ -414,7 +416,7 @@ export default function HomePage() {
 
       {/* ===== ORDER CTA BANNER ===== */}
       <section
-        className="py-20 relative overflow-hidden"
+        className="py-12 sm:py-16 md:py-20 relative overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, #1a5c2a 0%, #0f3a1a 100%)',
         }}
@@ -427,25 +429,25 @@ export default function HomePage() {
             viewport={{ once: true }}
             variants={stagger}
           >
-            <motion.p variants={fadeUp} className="text-[#f5c518] font-bold tracking-widest text-sm mb-2">ĐẶT MÓN NGAY</motion.p>
-            <motion.h2 variants={fadeUp} className="text-white font-black text-4xl md:text-5xl mb-4">
+            <motion.p variants={fadeUp} className="text-[#f5c518] font-bold tracking-widest text-xs sm:text-sm mb-1.5">ĐẶT MÓN NGAY</motion.p>
+            <motion.h2 variants={fadeUp} className="text-white font-black text-2xl sm:text-3xl md:text-4xl mb-3 sm:mb-4">
               Đói rồi? Gọi ngay thôi! 🍜
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-white/70 text-lg mb-8 max-w-xl mx-auto">
+            <motion.p variants={fadeUp} className="text-white/70 text-sm sm:text-base mb-6 sm:mb-8 max-w-xl mx-auto">
               Đặt món online dễ dàng, giao hàng tận nơi nhanh chóng. Phục vụ trong khu vực Hố Nai, Đồng Nai.
             </motion.p>
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <Link
                 to="/order"
-                className="bg-[#f5c518] text-[#1a5c2a] px-8 py-4 rounded-2xl font-black text-xl hover:bg-[#fdd835] transition-all shadow-2xl hover:-translate-y-1 active:scale-95"
+                className="w-full sm:w-auto bg-[#f5c518] text-[#1a5c2a] px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl font-black text-base sm:text-xl hover:bg-[#fdd835] transition-all shadow-2xl hover:-translate-y-1 active:scale-95"
               >
                 🛒 Đặt Món Online
               </Link>
               <a
                 href="tel:0947007881"
-                className="border-2 border-white/40 text-white px-8 py-4 rounded-2xl font-bold text-xl hover:bg-white/10 transition-all flex items-center gap-2"
+                className="w-full sm:w-auto border-2 border-white/40 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl font-bold text-base sm:text-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
               >
-                <Phone size={20} />
+                <Phone size={18} />
                 0947 007 881
               </a>
             </motion.div>
@@ -454,18 +456,18 @@ export default function HomePage() {
       </section>
 
       {/* ===== WHY CHOOSE US ===== */}
-      <section className="py-20 bg-[#fdf8f0]">
+      <section className="py-10 sm:py-16 bg-[#fdf8f0]">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <p className="text-[#f5c518] font-bold tracking-widest text-sm mb-2">TẠI SAO CHỌN KUTIN</p>
-            <h2 className="text-[#1a5c2a] font-black text-4xl md:text-5xl">Chúng Tôi Khác Biệt</h2>
-            <div className="w-16 h-1 bg-[#f5c518] mx-auto mt-4 rounded-full"></div>
+            <p className="text-[#f5c518] font-bold tracking-widest text-xs sm:text-sm mb-1.5">TẠI SAO CHỌN KUTIN</p>
+            <h2 className="text-[#1a5c2a] font-black text-2xl sm:text-3xl md:text-4xl">Chúng Tôi Khác Biệt</h2>
+            <div className="w-12 sm:w-16 h-1 bg-[#f5c518] mx-auto mt-3 rounded-full"></div>
           </motion.div>
 
           <motion.div
@@ -473,24 +475,24 @@ export default function HomePage() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
           >
             {[
-              { icon: <Truck size={28} />, title: 'Giao Hàng Nhanh', desc: 'Giao hàng tận nơi trong khu vực, đảm bảo món ăn còn nóng hổi khi đến tay bạn.' },
-              { icon: <Clock size={28} />, title: 'Mở Cửa Mỗi Ngày', desc: 'Phục vụ từ 10:00 đến 20:30, không có ngày nghỉ để phục vụ bạn tốt nhất.' },
-              { icon: <Shield size={28} />, title: 'An Toàn Thực Phẩm', desc: 'Nguyên liệu tươi sạch, chế biến theo quy trình đảm bảo an toàn vệ sinh thực phẩm.' },
-              { icon: <Star size={28} />, title: 'Đánh Giá 5 Sao', desc: 'Hàng trăm đánh giá 5 sao từ khách hàng hài lòng về chất lượng và dịch vụ.' },
+              { icon: <Truck size={24} />, title: 'Giao Hàng Nhanh', desc: 'Giao hàng tận nơi trong khu vực, đảm bảo món ăn còn nóng hổi khi đến tay bạn.' },
+              { icon: <Clock size={24} />, title: 'Mở Cửa Mỗi Ngày', desc: 'Phục vụ từ 10:00 đến 20:30, không có ngày nghỉ để phục vụ bạn tốt nhất.' },
+              { icon: <Shield size={24} />, title: 'An Toàn Thực Phẩm', desc: 'Nguyên liệu tươi sạch, chế biến theo quy trình đảm bảo an toàn vệ sinh thực phẩm.' },
+              { icon: <Star size={24} />, title: 'Đánh Giá 5 Sao', desc: 'Hàng trăm đánh giá 5 sao từ khách hàng hài lòng về chất lượng và dịch vụ.' },
             ].map((feat) => (
               <motion.div
                 key={feat.title}
                 variants={fadeUp}
-                className="bg-white rounded-2xl p-6 border border-gray-100 card-hover text-center"
+                className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-100 card-hover text-center"
               >
-                <div className="w-14 h-14 rounded-2xl bg-[#1a5c2a]/10 flex items-center justify-center mx-auto mb-4 text-[#1a5c2a]">
+                <div className="w-12 h-12 rounded-2xl bg-[#1a5c2a]/10 flex items-center justify-center mx-auto mb-3 sm:mb-4 text-[#1a5c2a]">
                   {feat.icon}
                 </div>
-                <h3 className="font-bold text-[#1a5c2a] text-lg mb-2">{feat.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{feat.desc}</p>
+                <h3 className="font-bold text-[#1a5c2a] text-base sm:text-lg mb-1.5">{feat.title}</h3>
+                <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">{feat.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -498,18 +500,18 @@ export default function HomePage() {
       </section>
 
       {/* ===== REVIEWS SECTION ===== */}
-      <section className="py-20 bg-white">
+      <section className="py-10 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <p className="text-[#f5c518] font-bold tracking-widest text-sm mb-2">PHẢN HỒI KHÁCH HÀNG</p>
-            <h2 className="text-[#1a5c2a] font-black text-4xl md:text-5xl">Khách Hàng Nói Gì</h2>
-            <div className="w-16 h-1 bg-[#f5c518] mx-auto mt-4 rounded-full"></div>
+            <p className="text-[#f5c518] font-bold tracking-widest text-xs sm:text-sm mb-1.5">PHẢN HỒI KHÁCH HÀNG</p>
+            <h2 className="text-[#1a5c2a] font-black text-2xl sm:text-3xl md:text-4xl">Khách Hàng Nói Gì</h2>
+            <div className="w-12 sm:w-16 h-1 bg-[#f5c518] mx-auto mt-3 rounded-full"></div>
           </motion.div>
 
           <motion.div
@@ -517,27 +519,27 @@ export default function HomePage() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
           >
             {reviews.map((review) => (
               <motion.div
                 key={review.name}
                 variants={fadeUp}
-                className="bg-[#fdf8f0] rounded-2xl p-6 border border-gray-100 card-hover"
+                className="bg-[#fdf8f0] rounded-2xl p-5 sm:p-6 border border-gray-100 card-hover"
               >
-                <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center gap-1 mb-2.5">
                   {[...Array(review.stars)].map((_, i) => (
-                    <Star key={i} size={16} fill="#f5c518" stroke="none" />
+                    <Star key={i} size={15} fill="#f5c518" stroke="none" />
                   ))}
                 </div>
-                <p className="text-gray-700 leading-relaxed mb-4 italic">"{review.text}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1a5c2a] flex items-center justify-center text-white font-bold text-sm">
+                <p className="text-gray-700 text-xs sm:text-sm leading-relaxed mb-3.5 italic">"{review.text}"</p>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-[#1a5c2a] flex items-center justify-center text-white font-bold text-xs">
                     {review.avatar}
                   </div>
                   <div>
-                    <p className="font-bold text-gray-800 text-sm">{review.name}</p>
-                    <p className="text-gray-400 text-xs">Khách hàng thường xuyên</p>
+                    <p className="font-bold text-gray-800 text-xs sm:text-sm">{review.name}</p>
+                    <p className="text-gray-400 text-[11px]">Khách hàng thường xuyên</p>
                   </div>
                 </div>
               </motion.div>
@@ -547,44 +549,44 @@ export default function HomePage() {
       </section>
 
       {/* ===== CONTACT SECTION ===== */}
-      <section className="py-20 bg-[#fdf8f0]">
+      <section className="py-10 sm:py-16 bg-[#fdf8f0]">
         <div className="max-w-7xl mx-auto px-4">
           <motion.div
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <p className="text-[#f5c518] font-bold tracking-widest text-sm mb-2">TÌM CHÚNG TÔI</p>
-            <h2 className="text-[#1a5c2a] font-black text-4xl md:text-5xl">Liên Hệ & Vị Trí</h2>
-            <div className="w-16 h-1 bg-[#f5c518] mx-auto mt-4 rounded-full"></div>
+            <p className="text-[#f5c518] font-bold tracking-widest text-xs sm:text-sm mb-1.5">TÌM CHÚNG TÔI</p>
+            <h2 className="text-[#1a5c2a] font-black text-2xl sm:text-3xl md:text-4xl">Liên Hệ & Vị Trí</h2>
+            <div className="w-12 sm:w-16 h-1 bg-[#f5c518] mx-auto mt-3 rounded-full"></div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-start">
             {/* Contact Info */}
             <motion.div
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
               variants={stagger}
-              className="space-y-4"
+              className="space-y-3 sm:space-y-4"
             >
               {[
                 {
-                  icon: <MapPin size={22} />,
+                  icon: <MapPin size={20} />,
                   title: 'Địa Chỉ Quán',
                   value: address,
                   action: null,
                 },
                 {
-                  icon: <Phone size={22} />,
+                  icon: <Phone size={20} />,
                   title: 'Điện Thoại / Hotline',
                   value: hotline,
                   action: telHref,
                 },
                 {
-                  icon: <Clock size={22} />,
+                  icon: <Clock size={20} />,
                   title: 'Thời Gian Phục Vụ',
                   value: openHours,
                   action: null,
@@ -593,17 +595,17 @@ export default function HomePage() {
                 <motion.div
                   key={info.title}
                   variants={fadeUp}
-                  className="bg-white rounded-2xl p-5 border border-gray-100 flex items-start gap-4 card-hover"
+                  className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-100 flex items-start gap-3 sm:gap-4 card-hover"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-[#1a5c2a] flex items-center justify-center text-[#f5c518] flex-shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#1a5c2a] flex items-center justify-center text-[#f5c518] flex-shrink-0">
                     {info.icon}
                   </div>
                   <div>
-                    <p className="font-bold text-gray-800 mb-1">{info.title}</p>
+                    <p className="font-bold text-gray-800 text-xs sm:text-sm mb-0.5">{info.title}</p>
                     {info.action ? (
-                      <a href={info.action} className="text-[#1a5c2a] font-semibold hover:underline">{info.value}</a>
+                      <a href={info.action} className="text-[#1a5c2a] font-semibold text-xs sm:text-sm hover:underline">{info.value}</a>
                     ) : (
-                      <p className="text-gray-600">{info.value}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm">{info.value}</p>
                     )}
                   </div>
                 </motion.div>
@@ -612,21 +614,22 @@ export default function HomePage() {
 
             {/* Map */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
+              initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="rounded-2xl overflow-hidden shadow-xl border border-gray-200"
+              transition={{ duration: 0.5 }}
+              className="rounded-2xl overflow-hidden shadow-lg border border-gray-200 h-64 sm:h-80 lg:h-[340px]"
             >
               <iframe
                 src={mapEmbedUrl}
                 width="100%"
-                height="400"
+                height="100%"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title={`${storeInfo?.name || 'KUTIN'} - Vị Trí Google Maps`}
+                className="w-full h-full"
               />
             </motion.div>
           </div>
@@ -635,16 +638,16 @@ export default function HomePage() {
 
       <Footer />
 
-      {/* Floating Zalo button */}
+      {/* Floating Zalo button (Nổi phía trên thanh MobileBottomNav) */}
       <a
         href={zaloHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"
+        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-30 w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
         style={{ background: '#0068FF' }}
         title="Chat Zalo Tư Vấn"
       >
-        <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
+        <svg width="24" height="24" className="sm:w-7 sm:h-7" viewBox="0 0 48 48" fill="none">
           <circle cx="24" cy="24" r="24" fill="#0068FF"/>
           <path d="M24 9C15.163 9 8 15.492 8 23.5c0 4.42 2.256 8.36 5.81 11.004L12 39l4.962-1.485C18.881 38.468 21.37 39 24 39c8.837 0 16-6.492 16-14.5S32.837 9 24 9z" fill="white"/>
           <text x="24" y="28" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#0068FF">Z</text>

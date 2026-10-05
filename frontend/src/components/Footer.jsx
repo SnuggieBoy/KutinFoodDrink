@@ -106,7 +106,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-[#2d7a40] py-4 px-4">
+      <div className="border-t border-[#2d7a40] py-4 pb-20 md:pb-4 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-gray-400">
           <p>© {currentYear} {storeName}. Tất cả các quyền được bảo lưu.</p>
           <div className="flex items-center gap-4 text-xs">
