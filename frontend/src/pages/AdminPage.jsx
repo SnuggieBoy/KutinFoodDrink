@@ -7,13 +7,19 @@ import {
   Plus, Edit2, Trash2, Filter, RotateCcw, LayoutGrid, List, AlertTriangle,
   ArrowRight, X, Sparkles, CheckSquare, Coffee, Utensils, Menu as MenuIcon,
   ChevronRight, ExternalLink, HelpCircle, Store, MapPin, Phone, Wifi, Navigation, Globe,
-  Upload, Image as ImageIcon, Link2, Ticket, Tag, Copy
+  Upload, Image as ImageIcon, Link2, Ticket, Tag, Copy, Warehouse, Receipt
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { menuItems, formatPrice, categories, getActiveMenu, saveActiveMenu, categoryImages } from '../data/menuData'
 import { getActiveVouchers, saveActiveVouchers, INITIAL_VOUCHERS } from '../data/voucherData'
+import { getActiveInventory, getImportRecords } from '../data/inventoryData'
+import { getTaxRecords } from '../data/taxData'
 import ReceiptPrintModal from '../components/ReceiptPrintModal'
+import AdminQRTablePrint from '../components/admin/AdminQRTablePrint'
+import AdminInventory from '../components/admin/AdminInventory'
+import AdminTax from '../components/admin/AdminTax'
 import { useRestaurant, DEFAULT_STORE_INFO } from '../context/RestaurantContext'
+
 
 // Demo sample data to make dashboard look rich and alive for demo
 const INITIAL_DEMO_ORDERS = [
@@ -192,6 +198,13 @@ export default function AdminPage() {
     description: '',
     isActive: true,
   })
+
+  // INVENTORY / WAREHOUSE CRUD STATE
+  const [inventory, setInventory] = useState(() => getActiveInventory())
+  const [importRecords, setImportRecords] = useState(() => getImportRecords())
+
+  // TAX MANAGEMENT STATE
+  const [taxRecords, setTaxRecords] = useState(() => getTaxRecords())
 
   // Sync vouchers across storage
   useEffect(() => {
@@ -690,11 +703,14 @@ export default function AdminPage() {
   const tabs = [
     { id: 'dashboard', label: 'Báo Cáo', fullLabel: 'Báo Cáo & Thống Kê', icon: <BarChart3 size={17} /> },
     { id: 'menu', label: 'Thực Đơn', fullLabel: 'Quản Lý Thực Đơn', icon: <Package size={17} />, badge: menu.filter(m => !m.isAvailable).length, badgeColor: 'bg-amber-500' },
+    { id: 'inventory', label: 'Kho Hàng', fullLabel: 'Quản Lý Kho & Nhập Hàng', icon: <Warehouse size={17} />, badge: inventory.filter(i => i.currentStock <= i.minStock).length, badgeColor: 'bg-red-500' },
     { id: 'vouchers', label: 'Mã Giảm Giá', fullLabel: 'Khuyến Mãi & Voucher', icon: <Ticket size={17} />, badge: vouchers.filter(v => v.isActive).length, badgeColor: 'bg-emerald-600' },
     { id: 'orders', label: 'Đơn Hàng', fullLabel: 'Quản Lý Đơn Hàng', icon: <ShoppingBag size={17} />, badge: pendingOrders.length, badgeColor: 'bg-red-500' },
     { id: 'kitchen', label: 'Bếp Nấu', fullLabel: 'Màn Hình Bếp & Chế Biến', icon: <ChefHat size={17} />, badge: preparingOrders.length, badgeColor: 'bg-orange-500' },
+    { id: 'qr_tables', label: 'QR Bàn Ăn', fullLabel: 'In Mã QR Gọi Món Bàn', icon: <QrCode size={17} /> },
+    { id: 'tax', label: 'Kê Khai Thuế', fullLabel: 'Kê Khai & Thuế 2026', icon: <Receipt size={17} />, badge: taxRecords.filter(t => t.status === 'pending' || t.status === 'overdue').length, badgeColor: 'bg-amber-500' },
     { id: 'store', label: 'Quán & Bản Đồ', fullLabel: 'Thông Tin Quán & Bản Đồ', icon: <Store size={17} /> },
-    { id: 'sepay', label: 'Thanh Toán QR', fullLabel: 'Cấu Hình Thanh Toán QR', icon: <QrCode size={17} /> },
+    { id: 'sepay', label: 'Thanh Toán QR', fullLabel: 'Cấu Hình Thanh Toán QR', icon: <CreditCard size={17} /> },
   ]
 
   return (
@@ -839,25 +855,67 @@ export default function AdminPage() {
                 <p className="text-gray-500 text-[11px] sm:text-xs">Dữ liệu thời gian thực từ POS tại quán và Website</p>
               </div>
 
-              {/* Time Range Pills */}
-              <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-2xl w-full sm:w-auto">
-                {[
-                  { id: 'today', label: 'Hôm nay' },
-                  { id: '7days', label: '7 ngày qua' },
-                  { id: 'month', label: 'Tháng này' },
-                ].map(r => (
-                  <button
-                    key={r.id}
-                    onClick={() => setTimeRange(r.id)}
-                    className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      timeRange === r.id
-                        ? 'bg-[#1a5c2a] text-white shadow'
-                        : 'text-gray-600 hover:text-black'
-                    }`}
-                  >
-                    {r.label}
-                  </button>
-                ))}
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Time Range Pills */}
+                <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-2xl w-full sm:w-auto">
+                  {[
+                    { id: 'today', label: 'Hôm nay' },
+                    { id: '7days', label: '7 ngày qua' },
+                    { id: 'month', label: 'Tháng này' },
+                  ].map(r => (
+                    <button
+                      key={r.id}
+                      onClick={() => setTimeRange(r.id)}
+                      className={`flex-1 sm:flex-initial px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        timeRange === r.id
+                          ? 'bg-[#1a5c2a] text-white shadow'
+                          : 'text-gray-600 hover:text-black'
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Export CSV Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const csvRows = [
+                      ['Mã Đơn', 'Thời Gian', 'Bàn/Kênh', 'Món Ăn', 'Tổng Tiền Hàng', 'Giảm Giá Voucher', 'Mã Voucher', 'Thực Thu', 'Thanh Toán', 'Trạng Thái', 'Nguồn'].join(',')
+                    ]
+                    orders.forEach(o => {
+                      const items = (o.items || []).map(i => `${i.name}(x${i.qty})`).join(' + ')
+                      const row = [
+                        `"#${o.orderNumber}"`,
+                        `"${o.createdAt ? new Date(o.createdAt).toLocaleString('vi-VN') : ''}"`,
+                        `"${o.tableName || 'Giao hàng'}"`,
+                        `"${items}"`,
+                        o.totalAmount || 0,
+                        o.discountAmount || 0,
+                        `"${o.voucherCode || ''}"`,
+                        o.grandTotal || o.totalAmount || 0,
+                        `"${o.paymentMethod === 'sepay' || o.paymentMethod === 'transfer' ? 'VietQR' : 'Tiền mặt'}"`,
+                        `"${o.status === 'done' ? 'Hoàn thành' : o.status === 'preparing' ? 'Đang nấu' : o.status === 'cancelled' ? 'Đã hủy' : 'Chờ xử lý'}"`,
+                        `"${o.source || 'POS'}"`,
+                      ].join(',')
+                      csvRows.push(row)
+                    })
+                    const bom = '\uFEFF'
+                    const blob = new Blob([bom + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `KuTin_BaoCaoDoanhThu_${new Date().toISOString().slice(0, 10)}.csv`
+                    a.click()
+                    URL.revokeObjectURL(url)
+                    toast.success('📥 Đã xuất báo cáo doanh thu thành công!')
+                  }}
+                  className="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#1a5c2a] text-xs font-black flex items-center gap-1.5 border border-emerald-200 shadow-sm transition-all active:scale-95"
+                  title="Xuất báo cáo đơn hàng ra file Excel/CSV"
+                >
+                  <ArrowUpRight size={14} /> Xuất CSV
+                </button>
               </div>
             </div>
 
@@ -2563,6 +2621,42 @@ export default function AdminPage() {
                 </div>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB 8: IN MÃ QR ĐẶT MÓN CHO BÀN                               */}
+        {/* ============================================================== */}
+        {activeTab === 'qr_tables' && (
+          <div className="animate-fadeIn">
+            <AdminQRTablePrint storeInfo={storeInfo} tableCount={12} />
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB 9: QUẢN LÝ KHO & NHẬP HÀNG (FULL CRUD)                     */}
+        {/* ============================================================== */}
+        {activeTab === 'inventory' && (
+          <div className="animate-fadeIn">
+            <AdminInventory
+              inventory={inventory}
+              setInventory={setInventory}
+              importRecords={importRecords}
+              setImportRecords={setImportRecords}
+            />
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB 10: QUẢN LÝ KÊ KHAI & THUẾ 2026                            */}
+        {/* ============================================================== */}
+        {activeTab === 'tax' && (
+          <div className="animate-fadeIn">
+            <AdminTax
+              taxRecords={taxRecords}
+              setTaxRecords={setTaxRecords}
+              orders={orders}
+            />
           </div>
         )}
       </main>

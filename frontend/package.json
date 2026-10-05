@@ -17,6 +17,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "framer-motion": "^14.0.0",
     "lucide-react": "^1.52.0",
+    "qrcode.react": "^4.2.0",
     "react-hook-form": "^7.89.0",
     "react-hot-toast": "^2.6.1",
     "react-router-dom": "^7.18.4",
