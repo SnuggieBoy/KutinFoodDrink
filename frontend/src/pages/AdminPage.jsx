@@ -729,14 +729,14 @@ export default function AdminPage() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl font-bold text-xs transition-all ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl font-bold text-xs transition-all ${
                 activeTab === tab.id 
-                  ? 'bg-[#f5c518] text-[#1a5c2a] shadow-lg shadow-[#f5c518]/20 scale-[1.02]' 
+                  ? 'bg-[#f5c518] text-[#1a5c2a] shadow-lg shadow-[#f5c518]/20 scale-[1.01]' 
                   : 'text-white/70 hover:bg-white/10 hover:text-white'
               }`}
             >
