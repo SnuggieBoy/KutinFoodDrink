@@ -38,41 +38,49 @@ export default function MenuCard({ item, compact = false }) {
   const displayBadge = item.badge === 'Hot' ? '🔥 Món Hot' : item.badge === 'VIP' ? '👑 Thượng Hạng' : item.badge
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md card-hover border border-gray-100 flex flex-col">
-      {/* Image */}
-      <div className="relative overflow-hidden">
+    <div className="bg-white rounded-2xl overflow-hidden shadow-md card-hover border border-gray-100 flex flex-col h-full group">
+      {/* Image container with fixed golden 4:3 aspect ratio */}
+      <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden flex-shrink-0">
         <img
           src={imgSrc}
           alt={item.name}
-          className={`w-full object-cover transition-transform duration-500 hover:scale-110 ${compact ? 'h-40' : 'h-48'}`}
+          className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-108"
           loading="lazy"
           onError={(e) => {
             e.currentTarget.src = categoryImages[item.category] || categoryImages.default
           }}
         />
         {item.badge && (
-          <span className={`absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full ${badgeColors[item.badge] || 'bg-gray-600 text-white'}`}>
+          <span className={`absolute top-2 left-2 text-[10px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 rounded-full shadow-sm ${badgeColors[item.badge] || 'bg-gray-600 text-white'}`}>
             {displayBadge}
           </span>
         )}
         {!item.isAvailable && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <span className="text-white font-bold text-sm bg-red-500 px-3 py-1 rounded-full">Tạm hết</span>
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-[2px]">
+            <span className="text-white font-bold text-xs sm:text-sm bg-red-500 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-md">Tạm hết</span>
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-3.5 sm:p-4 flex flex-col flex-1">
-        <h3 className="font-extrabold text-gray-900 text-sm sm:text-[15px] leading-snug line-clamp-2 flex-1 tracking-tight">{item.name}</h3>
-        {!compact && item.description && (
-          <p className="text-gray-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">{item.description}</p>
-        )}
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1 justify-between">
+        <div>
+          <h3 className="font-extrabold text-gray-900 text-xs sm:text-sm md:text-[15px] leading-snug line-clamp-2 tracking-tight group-hover:text-[#1a5c2a] transition-colors">
+            {item.name}
+          </h3>
+          {!compact && item.description && (
+            <p className="text-gray-500 text-[11px] sm:text-xs mt-1 sm:mt-1.5 line-clamp-2 leading-relaxed hidden sm:block">
+              {item.description}
+            </p>
+          )}
+        </div>
 
-        <div className="flex items-center justify-between mt-3 pt-1.5 border-t border-gray-100 gap-2">
-          <div>
-            <p className="text-[#1a5c2a] font-black text-base sm:text-lg tabular-nums tracking-tight">{formatPrice(item.price)}</p>
-            <div className="flex items-center gap-0.5 mt-0.5">
+        <div className="flex items-center justify-between mt-2.5 sm:mt-3 pt-1.5 sm:pt-2 border-t border-gray-100 gap-1.5 sm:gap-2">
+          <div className="min-w-0">
+            <p className="text-[#1a5c2a] font-black text-sm sm:text-base md:text-lg tabular-nums tracking-tight truncate">
+              {formatPrice(item.price)}
+            </p>
+            <div className="hidden sm:flex items-center gap-0.5 mt-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} size={10} fill="#f5c518" stroke="none" />
               ))}
@@ -81,10 +89,10 @@ export default function MenuCard({ item, compact = false }) {
           <button
             disabled={!item.isAvailable}
             onClick={() => addItem(item)}
-            className="flex items-center gap-1 bg-[#1a5c2a] text-white px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold hover:bg-[#2d7a40] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-md active:scale-95"
+            className="flex-shrink-0 flex items-center gap-1 bg-[#1a5c2a] text-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold hover:bg-[#2d7a40] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-md active:scale-95 shadow-xs"
           >
             <Plus size={14} />
-            Thêm
+            <span className="hidden sm:inline">Thêm</span>
           </button>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { X, Minus, Plus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react'
 import { useCart } from '../context/CartContext'
-import { formatPrice } from '../data/menuData'
+import { formatPrice, categoryImages } from '../data/menuData'
 import { useRestaurant } from '../context/RestaurantContext'
 
 export default function CartDrawer({ open, onClose }) {
@@ -71,47 +71,55 @@ export default function CartDrawer({ open, onClose }) {
             </div>
           ) : (
             items.map(item => (
-              <div key={item.id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-gray-800 leading-tight">{item.name}</p>
-                    <p className="text-[#1a5c2a] font-bold text-sm mt-1">{formatPrice(item.price)}</p>
-                    <input
-                      type="text"
-                      placeholder="Ghi chú (không cay, ít đường...)"
-                      defaultValue={item.note || ''}
-                      onChange={e => {
-                        clearTimeout(item._noteTimer)
-                        item._noteTimer = setTimeout(() => updateQty(item.id, item.qty), 0)
-                      }}
-                      className="mt-2 w-full text-xs border border-gray-200 rounded-lg px-2 py-1 text-gray-600 focus:outline-none focus:border-[#1a5c2a]"
-                    />
-                  </div>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-400 hover:text-red-600 transition-colors flex-shrink-0"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-2">
+              <div key={item.id} className="bg-gray-50 rounded-2xl p-3 border border-gray-100 flex items-start gap-3">
+                <img
+                  src={item.image || categoryImages[item.category] || categoryImages.default}
+                  alt={item.name}
+                  className="w-14 h-14 rounded-xl object-cover object-center flex-shrink-0 border border-gray-200 bg-white shadow-xs"
+                  onError={(e) => { e.currentTarget.src = categoryImages[item.category] || categoryImages.default }}
+                  loading="lazy"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm text-gray-800 leading-tight line-clamp-1">{item.name}</p>
+                      <p className="text-[#1a5c2a] font-black text-xs sm:text-sm mt-0.5 tabular-nums">{formatPrice(item.price)}</p>
+                    </div>
                     <button
-                      onClick={() => updateQty(item.id, item.qty - 1)}
-                      className="w-7 h-7 rounded-full border-2 border-[#1a5c2a] text-[#1a5c2a] flex items-center justify-center hover:bg-[#1a5c2a] hover:text-white transition-colors"
+                      onClick={() => removeItem(item.id)}
+                      className="text-red-400 hover:text-red-600 transition-colors flex-shrink-0"
                     >
-                      <Minus size={14} />
-                    </button>
-                    <span className="w-6 text-center font-bold text-sm">{item.qty}</span>
-                    <button
-                      onClick={() => updateQty(item.id, item.qty + 1)}
-                      className="w-7 h-7 rounded-full bg-[#1a5c2a] text-white flex items-center justify-center hover:bg-[#2d7a40] transition-colors"
-                    >
-                      <Plus size={14} />
+                      <Trash2 size={15} />
                     </button>
                   </div>
-                  <p className="font-bold text-[#1a5c2a]">{formatPrice(item.price * item.qty)}</p>
+                  <input
+                    type="text"
+                    placeholder="Ghi chú (không cay, ít đá...)"
+                    defaultValue={item.note || ''}
+                    onChange={e => {
+                      clearTimeout(item._noteTimer)
+                      item._noteTimer = setTimeout(() => updateQty(item.id, item.qty), 0)
+                    }}
+                    className="mt-1.5 w-full text-[11px] border border-gray-200 rounded-lg px-2 py-1 text-gray-600 focus:outline-none focus:border-[#1a5c2a] bg-white"
+                  />
+                  <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-gray-200/60">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => updateQty(item.id, item.qty - 1)}
+                        className="w-6 h-6 rounded-full border border-[#1a5c2a] text-[#1a5c2a] flex items-center justify-center hover:bg-[#1a5c2a] hover:text-white transition-colors"
+                      >
+                        <Minus size={12} />
+                      </button>
+                      <span className="w-5 text-center font-bold text-xs">{item.qty}</span>
+                      <button
+                        onClick={() => updateQty(item.id, item.qty + 1)}
+                        className="w-6 h-6 rounded-full bg-[#1a5c2a] text-white flex items-center justify-center hover:bg-[#2d7a40] transition-colors"
+                      >
+                        <Plus size={12} />
+                      </button>
+                    </div>
+                    <p className="font-black text-xs sm:text-sm text-[#1a5c2a] tabular-nums">{formatPrice(item.price * item.qty)}</p>
+                  </div>
                 </div>
               </div>
             ))

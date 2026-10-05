@@ -11,7 +11,7 @@ import Footer from '../components/Footer'
 import MenuCard from '../components/MenuCard'
 import SepayQRModal from '../components/SepayQRModal'
 import { useCart } from '../context/CartContext'
-import { featuredItems, formatPrice } from '../data/menuData'
+import { featuredItems, formatPrice, categoryImages } from '../data/menuData'
 import { useRestaurant } from '../context/RestaurantContext'
 import { sound } from '../utils/sound'
 import { getActiveVouchers, validateVoucher, incrementVoucherUsage } from '../data/voucherData'
@@ -196,10 +196,18 @@ export default function OrderPage() {
           ) : (
             <>
               {items.map(item => (
-                <div key={item.id} className="bg-white rounded-2xl p-4 border border-gray-100 flex items-center gap-4">
+                <div key={item.id} className="bg-white rounded-2xl p-3 sm:p-4 border border-gray-100 flex items-center gap-3 sm:gap-4 shadow-sm">
+                  {/* Dish Thumbnail */}
+                  <img
+                    src={item.image || categoryImages[item.category] || categoryImages.default}
+                    alt={item.name}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover object-center flex-shrink-0 border border-gray-100 bg-gray-50"
+                    onError={(e) => { e.currentTarget.src = categoryImages[item.category] || categoryImages.default }}
+                    loading="lazy"
+                  />
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-800 line-clamp-1">{item.name}</p>
-                    <p className="text-[#1a5c2a] font-semibold text-sm mt-1">{formatPrice(item.price)}</p>
+                    <p className="font-bold text-gray-800 text-sm sm:text-base line-clamp-1">{item.name}</p>
+                    <p className="text-[#1a5c2a] font-semibold text-xs sm:text-sm mt-0.5 tabular-nums">{formatPrice(item.price)}</p>
                     {item.note && (
                       <p className="text-gray-400 text-xs mt-1">📝 {item.note}</p>
                     )}
