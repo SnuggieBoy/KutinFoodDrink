@@ -700,18 +700,50 @@ export default function AdminPage() {
     )
   }
 
-  const tabs = [
-    { id: 'dashboard', label: 'Báo Cáo', fullLabel: 'Báo Cáo & Thống Kê', icon: <BarChart3 size={17} /> },
-    { id: 'menu', label: 'Thực Đơn', fullLabel: 'Quản Lý Thực Đơn', icon: <Package size={17} />, badge: menu.filter(m => !m.isAvailable).length, badgeColor: 'bg-amber-500' },
-    { id: 'inventory', label: 'Kho Hàng', fullLabel: 'Quản Lý Kho & Nhập Hàng', icon: <Warehouse size={17} />, badge: inventory.filter(i => i.currentStock <= i.minStock).length, badgeColor: 'bg-red-500' },
-    { id: 'vouchers', label: 'Mã Giảm Giá', fullLabel: 'Khuyến Mãi & Voucher', icon: <Ticket size={17} />, badge: vouchers.filter(v => v.isActive).length, badgeColor: 'bg-emerald-600' },
-    { id: 'orders', label: 'Đơn Hàng', fullLabel: 'Quản Lý Đơn Hàng', icon: <ShoppingBag size={17} />, badge: pendingOrders.length, badgeColor: 'bg-red-500' },
-    { id: 'kitchen', label: 'Bếp Nấu', fullLabel: 'Màn Hình Bếp & Chế Biến', icon: <ChefHat size={17} />, badge: preparingOrders.length, badgeColor: 'bg-orange-500' },
-    { id: 'qr_tables', label: 'QR Bàn Ăn', fullLabel: 'In Mã QR Gọi Món Bàn', icon: <QrCode size={17} /> },
-    { id: 'tax', label: 'Kê Khai Thuế', fullLabel: 'Kê Khai & Thuế 2026', icon: <Receipt size={17} />, badge: taxRecords.filter(t => t.status === 'pending' || t.status === 'overdue').length, badgeColor: 'bg-amber-500' },
-    { id: 'store', label: 'Quán & Bản Đồ', fullLabel: 'Thông Tin Quán & Bản Đồ', icon: <Store size={17} /> },
-    { id: 'sepay', label: 'Thanh Toán QR', fullLabel: 'Cấu Hình Thanh Toán QR', icon: <CreditCard size={17} /> },
+  // GROUPED ADMIN NAVIGATION TABS (4 FUNCTIONAL GROUPS)
+  const tabGroups = [
+    {
+      groupId: 'overview',
+      groupLabel: 'TỔNG QUAN',
+      shortLabel: 'TỔNG QUAN',
+      tabs: [
+        { id: 'dashboard', label: 'Báo Cáo', fullLabel: 'Báo Cáo & Thống Kê', icon: <BarChart3 size={16} /> },
+      ]
+    },
+    {
+      groupId: 'operations',
+      groupLabel: 'VẬN HÀNH & BẾP NẤU',
+      shortLabel: 'VẬN HÀNH',
+      tabs: [
+        { id: 'orders', label: 'Đơn Hàng', fullLabel: 'Quản Lý Đơn Hàng', icon: <ShoppingBag size={16} />, badge: pendingOrders.length, badgeColor: 'bg-red-500' },
+        { id: 'kitchen', label: 'Bếp Nấu', fullLabel: 'Màn Hình Bếp KDS', icon: <ChefHat size={16} />, badge: preparingOrders.length, badgeColor: 'bg-orange-500' },
+        { id: 'qr_tables', label: 'QR Bàn Ăn', fullLabel: 'In Mã QR Bàn Ăn', icon: <QrCode size={16} /> },
+      ]
+    },
+    {
+      groupId: 'catalog',
+      groupLabel: 'HÀNG HÓA & ƯU ĐÃI',
+      shortLabel: 'HÀNG HÓA',
+      tabs: [
+        { id: 'menu', label: 'Thực Đơn', fullLabel: 'Quản Lý Thực Đơn', icon: <Package size={16} />, badge: menu.filter(m => !m.isAvailable).length, badgeColor: 'bg-amber-500' },
+        { id: 'inventory', label: 'Kho Hàng', fullLabel: 'Kho & Nhập Hàng', icon: <Warehouse size={16} />, badge: inventory.filter(i => i.currentStock <= i.minStock).length, badgeColor: 'bg-red-500' },
+        { id: 'vouchers', label: 'Mã Giảm Giá', fullLabel: 'Khuyến Mãi & Voucher', icon: <Ticket size={16} />, badge: vouchers.filter(v => v.isActive).length, badgeColor: 'bg-emerald-600' },
+      ]
+    },
+    {
+      groupId: 'finance_settings',
+      groupLabel: 'TÀI CHÍNH & CÀI ĐẶT',
+      shortLabel: 'CÀI ĐẶT',
+      tabs: [
+        { id: 'tax', label: 'Kê Khai Thuế', fullLabel: 'Kê Khai & Thuế 2026', icon: <Receipt size={16} />, badge: taxRecords.filter(t => t.status === 'pending' || t.status === 'overdue').length, badgeColor: 'bg-amber-500' },
+        { id: 'store', label: 'Quán & Bản Đồ', fullLabel: 'Thông Tin Quán & Bản Đồ', icon: <Store size={16} /> },
+        { id: 'sepay', label: 'Thanh Toán QR', fullLabel: 'Cấu Hình Thanh Toán QR', icon: <CreditCard size={16} /> },
+      ]
+    }
   ]
+
+  // Flattened tabs for fast lookups
+  const tabs = tabGroups.flatMap(g => g.tabs)
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex flex-col md:flex-row font-sans text-gray-900">
@@ -728,26 +760,40 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl font-bold text-xs transition-all ${
-                activeTab === tab.id 
-                  ? 'bg-[#f5c518] text-[#1a5c2a] shadow-lg shadow-[#f5c518]/20 scale-[1.01]' 
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
-              }`}
-            >
-              {tab.icon}
-              <span className="flex-1 text-left">{tab.fullLabel}</span>
-              {tab.badge > 0 && (
-                <span className={`${tab.badgeColor || 'bg-red-500'} text-white text-[10px] px-2 py-0.5 rounded-full font-black`}>
-                  {tab.badge}
+        {/* Navigation Grouped by Categories */}
+        <nav className="flex-1 p-3 space-y-3 overflow-y-auto">
+          {tabGroups.map(group => (
+            <div key={group.groupId} className="space-y-1">
+              <div className="px-3 pt-1 pb-0.5 flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#f5c518]/70">
+                  {group.groupLabel}
                 </span>
-              )}
-            </button>
+                <span className="text-[9px] text-white/40 font-bold">
+                  {group.tabs.length}
+                </span>
+              </div>
+              <div className="space-y-0.5">
+                {group.tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl font-bold text-xs transition-all ${
+                      activeTab === tab.id 
+                        ? 'bg-[#f5c518] text-[#1a5c2a] shadow-md shadow-[#f5c518]/20 scale-[1.01]' 
+                        : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {tab.icon}
+                    <span className="flex-1 text-left">{tab.fullLabel}</span>
+                    {tab.badge > 0 && (
+                      <span className={`${tab.badgeColor || 'bg-red-500'} text-white text-[10px] px-2 py-0.5 rounded-full font-black`}>
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
 
@@ -813,26 +859,36 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Mobile Horizontal Scrollable Tabs */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#07240f] overflow-x-auto scrollbar-none border-t border-[#155325]">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex-shrink-0 ${
-                activeTab === tab.id
-                  ? 'bg-[#f5c518] text-[#1a5c2a] shadow-sm font-black'
-                  : 'bg-white/10 text-white/70 hover:text-white'
-              }`}
-            >
-              {tab.icon}
-              <span>{tab.label}</span>
-              {tab.badge > 0 && (
-                <span className={`${tab.badgeColor || 'bg-red-500'} text-white text-[9px] px-1.5 py-0.2 rounded-full font-black`}>
-                  {tab.badge}
-                </span>
+        {/* Mobile Horizontal Scrollable Tabs with Group Dividers */}
+        <div className="flex items-center gap-2 px-2.5 py-2 bg-[#07240f] overflow-x-auto scrollbar-none border-t border-[#155325]">
+          {tabGroups.map((group, gIdx) => (
+            <div key={group.groupId} className="flex items-center gap-1.5 flex-shrink-0">
+              {gIdx > 0 && (
+                <div className="h-4 w-[1px] bg-white/20 mx-1 flex-shrink-0" />
               )}
-            </button>
+              <span className="text-[9px] font-black uppercase tracking-wider text-[#f5c518]/70 px-1 select-none flex-shrink-0">
+                {group.shortLabel}
+              </span>
+              {group.tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all flex-shrink-0 ${
+                    activeTab === tab.id
+                      ? 'bg-[#f5c518] text-[#1a5c2a] shadow-sm font-black'
+                      : 'bg-white/10 text-white/70 hover:text-white'
+                  }`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                  {tab.badge > 0 && (
+                    <span className={`${tab.badgeColor || 'bg-red-500'} text-white text-[9px] px-1.5 py-0.2 rounded-full font-black`}>
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           ))}
         </div>
       </header>
