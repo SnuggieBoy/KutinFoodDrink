@@ -52,9 +52,27 @@ export default function TrackOrderPage() {
     }
   }, [searchParams])
 
+  const [recentOrder, setRecentOrder] = useState(null)
+
+  useEffect(() => {
+    try {
+      const orders = JSON.parse(localStorage.getItem('kutin_orders') || '[]')
+      if (orders.length > 0) {
+        setRecentOrder(orders[orders.length - 1])
+      }
+    } catch (e) {}
+  }, [])
+
   const handleSearch = (e) => {
     e.preventDefault()
     if (query.trim()) searchOrder(query.trim())
+  }
+
+  const handleQuickTrackRecent = () => {
+    if (recentOrder) {
+      setQuery(recentOrder.orderNumber)
+      searchOrder(recentOrder.orderNumber)
+    }
   }
 
   const config = order ? statusConfig[order.status] : null
@@ -73,17 +91,32 @@ export default function TrackOrderPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-10">
         {/* Search */}
-        <form onSubmit={handleSearch} className="flex gap-2 mb-8">
+        <form onSubmit={handleSearch} className="flex gap-2 mb-3">
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Nhập mã đơn hàng (VD: KT123456) hoặc SĐT"
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1a5c2a] bg-white text-sm"
+            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#1a5c2a] bg-white text-sm shadow-xs"
           />
-          <button type="submit" className="bg-[#1a5c2a] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2d7a40] transition-colors flex items-center gap-2">
+          <button type="submit" className="bg-[#1a5c2a] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#2d7a40] transition-colors flex items-center gap-2 shadow-xs active:scale-95">
             <Search size={18} /> Tìm
           </button>
         </form>
+
+        {/* Recent Order 1-Tap Suggestion Chip */}
+        {recentOrder && !order && (
+          <div className="mb-6 flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-gray-400 font-medium">Đơn vừa đặt gần nhất:</span>
+            <button
+              type="button"
+              onClick={handleQuickTrackRecent}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-[#1a5c2a] text-xs font-black transition-all shadow-xs border border-emerald-300 active:scale-95"
+            >
+              <span>⚡ Xem ngay #{recentOrder.orderNumber}</span>
+              <span className="text-[10px] text-emerald-700 font-semibold">({formatPrice(recentOrder.grandTotal || recentOrder.totalAmount)})</span>
+            </button>
+          </div>
+        )}
 
         {notFound && (
           <motion.div
@@ -175,15 +208,28 @@ export default function TrackOrderPage() {
 
             {/* Order Details */}
             <div className="bg-white rounded-2xl p-5 border border-gray-100">
-              <h3 className="font-bold text-gray-800 mb-3">Chi Tiết Đơn Hàng</h3>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-bold text-gray-800">Chi Tiết Đơn Hàng</h3>
+                {order.tableName && (
+                  <span className="bg-amber-100 text-amber-800 text-xs font-black px-2.5 py-0.5 rounded-full">
+                    {order.tableName}
+                  </span>
+                )}
+              </div>
               <div className="space-y-2">
-                {order.items.map(item => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-gray-700">{item.name} x{item.qty}</span>
-                    <span className="font-semibold text-[#1a5c2a]">{formatPrice(item.price * item.qty)}</span>
+                {(order.items || []).map((item, idx) => (
+                  <div key={item.id || idx} className="flex justify-between text-sm">
+                    <span className="text-gray-700">{item.name || item.title || 'Món ăn'} x{item.qty || item.quantity || 1}</span>
+                    <span className="font-semibold text-[#1a5c2a]">{formatPrice((item.price || 0) * (item.qty || item.quantity || 1))}</span>
                   </div>
                 ))}
                 <div className="border-t pt-2 mt-2 space-y-1">
+                  {order.discountAmount > 0 && (
+                    <div className="flex justify-between text-sm text-amber-600 font-medium">
+                      <span>Giảm giá {order.voucherCode ? `(${order.voucherCode})` : ''}</span>
+                      <span>-{formatPrice(order.discountAmount)}</span>
+                    </div>
+                  )}
                   {order.shippingFee > 0 && (
                     <div className="flex justify-between text-sm text-gray-500">
                       <span>Phí giao hàng</span>
@@ -192,23 +238,37 @@ export default function TrackOrderPage() {
                   )}
                   <div className="flex justify-between font-black text-base">
                     <span>Tổng cộng</span>
-                    <span className="text-[#1a5c2a]">{formatPrice(order.grandTotal)}</span>
+                    <span className="text-[#1a5c2a]">{formatPrice(order.grandTotal ?? order.totalAmount ?? 0)}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Customer */}
+            {/* Customer / Service Destination */}
             <div className="bg-white rounded-2xl p-5 border border-gray-100">
-              <h3 className="font-bold text-gray-800 mb-3">Thông Tin Giao Hàng</h3>
+              <h3 className="font-bold text-gray-800 mb-3">
+                {order.source === 'POS' || order.tableName ? 'Thông Tin Phục Vụ' : 'Thông Tin Giao Hàng'}
+              </h3>
               <div className="space-y-1 text-sm">
-                <p><span className="text-gray-500">Tên:</span> <span className="font-semibold">{order.customer.name}</span></p>
-                <p><span className="text-gray-500">SĐT:</span> <span className="font-semibold">{order.customer.phone}</span></p>
-                {order.customer.address && (
+                {order.customer?.name ? (
+                  <p><span className="text-gray-500">Tên:</span> <span className="font-semibold">{order.customer.name}</span></p>
+                ) : (
+                  <p><span className="text-gray-500">Khách hàng:</span> <span className="font-semibold">Khách tại quán {order.tableName ? `(${order.tableName})` : ''}</span></p>
+                )}
+                {order.customer?.phone && (
+                  <p><span className="text-gray-500">SĐT:</span> <span className="font-semibold">{order.customer.phone}</span></p>
+                )}
+                {order.customer?.address && (
                   <p><span className="text-gray-500">Địa chỉ:</span> <span className="font-semibold">{order.customer.address}</span></p>
                 )}
-                {order.customer.note && (
-                  <p><span className="text-gray-500">Ghi chú:</span> <span className="font-semibold">{order.customer.note}</span></p>
+                {order.tableName && !order.customer?.address && (
+                  <p><span className="text-gray-500">Khu vực bàn:</span> <span className="font-semibold text-emerald-800">{order.tableName}</span></p>
+                )}
+                {(order.customer?.note || order.note) && (
+                  <p><span className="text-gray-500">Ghi chú:</span> <span className="font-semibold">{order.customer?.note || order.note}</span></p>
+                )}
+                {order.paymentMethod && (
+                  <p><span className="text-gray-500">Thanh toán:</span> <span className="font-semibold uppercase text-xs px-2 py-0.5 rounded bg-gray-100">{order.paymentMethod}</span></p>
                 )}
               </div>
             </div>

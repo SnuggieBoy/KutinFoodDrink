@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ShoppingCart, Menu, X, Phone, Shield, Lock, LogOut } from 'lucide-react'
+import { ShoppingCart, Menu, X, Phone, Shield, Lock, LogOut, ChevronDown } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useRestaurant } from '../context/RestaurantContext'
 import CartDrawer from './CartDrawer'
@@ -77,10 +77,11 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setStaffDropdownOpen(!staffDropdownOpen)}
-                  className="flex items-center gap-1 bg-[#f5c518] text-[#1a5c2a] px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-black shadow-md hover:bg-[#fdd835] transition-all"
+                  className="flex items-center gap-1.5 bg-[#f5c518] text-[#1a5c2a] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-black shadow-md hover:bg-[#fdd835] transition-all"
                 >
                   <Shield size={12} className="sm:w-[13px] sm:h-[13px]" />
-                  <span>Quản Trị ▾</span>
+                  <span>Quản Trị</span>
+                  <ChevronDown size={11} className={`transition-transform duration-200 ${staffDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {staffDropdownOpen && (

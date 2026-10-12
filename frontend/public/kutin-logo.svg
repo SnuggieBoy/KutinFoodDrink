@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient: Kutin Forest Green & Warm Deep Tone -->
+    <linearGradient id="ktBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e6b32" />
+      <stop offset="60%" stop-color="#144d22" />
+      <stop offset="100%" stop-color="#0b2c13" />
+    </linearGradient>
+
+    <!-- Vibrant Food Gold/Cheese Yellow Gradient -->
+    <linearGradient id="ktGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff176" />
+      <stop offset="40%" stop-color="#f5c518" />
+      <stop offset="100%" stop-color="#e65100" />
+    </linearGradient>
+
+    <!-- Spicy Orange / Chili Accent -->
+    <linearGradient id="ktChiliGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7043" />
+      <stop offset="100%" stop-color="#d84315" />
+    </linearGradient>
+
+    <filter id="ktShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Squircle Base with Gold Rim -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#ktBgGrad)" filter="url(#ktShadow)" />
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="url(#ktGoldGrad)" stroke-width="8" opacity="0.9" />
+
+  <!-- Outer Ring Accent -->
+  <circle cx="256" cy="256" r="195" fill="none" stroke="#f5c518" stroke-width="3" stroke-dasharray="10 8" opacity="0.35" />
+
+  <!-- Hot Steam Curves (Làn khói thơm bốc lên từ món ăn) -->
+  <path d="M210 135 C200 110, 220 90, 210 70" fill="none" stroke="url(#ktGoldGrad)" stroke-width="6" stroke-linecap="round" opacity="0.8" />
+  <path d="M256 125 C246 100, 266 80, 256 60" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" opacity="0.9" />
+  <path d="M302 135 C292 110, 312 90, 302 70" fill="none" stroke="url(#ktGoldGrad)" stroke-width="6" stroke-linecap="round" opacity="0.8" />
+
+  <!-- Food Bowl / Hot Pot / Pan Base -->
+  <!-- Bowl Outer Rim Glow -->
+  <ellipse cx="256" cy="285" rx="155" ry="38" fill="url(#ktGoldGrad)" />
+  <ellipse cx="256" cy="282" rx="145" ry="30" fill="#ffffff" opacity="0.25" />
+  
+  <!-- Bowl Body -->
+  <path d="M106 285 C116 395, 396 395, 406 285 Z" fill="url(#ktGoldGrad)" />
+  
+  <!-- Inner Rich Broth / Dish Filling -->
+  <path d="M120 286 C135 375, 377 375, 392 286 Z" fill="url(#ktChiliGrad)" />
+
+  <!-- Prominent Stylized Letter "K" (Kutin Signature Brandmark) in Bowl -->
+  <g id="kutin-k">
+    <!-- Backing Drop for K -->
+    <path d="M 215 200 L 215 365 A 10 10 0 0 1 195 365 L 195 200 A 10 10 0 0 1 215 200 Z" fill="#0b2c13" opacity="0.3" />
+    
+    <!-- Bold Letter K Vertical Pillar -->
+    <rect x="200" y="195" width="28" height="170" rx="14" fill="#ffffff" />
+    
+    <!-- Bold Upper Diagonal Leg -->
+    <path d="M 216 270 L 295 195 A 14 14 0 0 1 315 215 L 246 282 Z" fill="#ffffff" />
+    
+    <!-- Bold Lower Diagonal Leg with Gold Accent Foot -->
+    <path d="M 235 272 L 315 352 A 14 14 0 0 1 295 372 L 218 295 Z" fill="#ffffff" />
+  </g>
+
+  <!-- Chopsticks & Spoon crossing or Culinary Sparkle -->
+  <!-- Golden Fork / Chopstick silhouette on side -->
+  <g transform="rotate(28 360 170)">
+    <!-- Chopstick 1 -->
+    <line x1="360" y1="90" x2="360" y2="240" stroke="url(#ktGoldGrad)" stroke-width="7" stroke-linecap="round" />
+    <!-- Chopstick 2 -->
+    <line x1="372" y1="95" x2="372" y2="240" stroke="url(#ktGoldGrad)" stroke-width="7" stroke-linecap="round" />
+  </g>
+
+  <!-- Delicious Sparkles / Chili leaf -->
+  <circle cx="160" cy="180" r="8" fill="#f5c518" />
+  <circle cx="140" cy="205" r="5" fill="#ffffff" />
+  <circle cx="370" cy="230" r="7" fill="#ff7043" />
+
+  <!-- Foot of the Bowl -->
+  <rect x="195" y="380" width="122" height="18" rx="9" fill="url(#ktGoldGrad)" />
+  <rect x="210" y="398" width="92" height="6" rx="3" fill="#0b2c13" opacity="0.4" />
+</svg>

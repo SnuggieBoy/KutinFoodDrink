@@ -439,32 +439,64 @@ export default function PosPage() {
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT COLUMN: Table Bar + Categories + Menu Items */}
         <div className={`flex-1 flex-col bg-gray-50 border-r border-gray-200 overflow-hidden ${mobileTab === 'menu' ? 'flex' : 'hidden md:flex'}`}>
-          {/* Table Selector Bar */}
-          <div className="bg-white p-2.5 border-b border-gray-200 overflow-x-auto scrollbar-none flex-shrink-0">
-            <div className="flex gap-2 min-w-max">
+          {/* Table Selector Bar — Giao diện Bàn Ăn Mini chân thực (Kiểu KiotViet) */}
+          <div className="bg-gradient-to-b from-gray-50 to-white p-2 sm:p-2.5 border-b border-gray-200 overflow-x-auto scrollbar-none flex-shrink-0">
+            <div className="flex gap-2 sm:gap-2.5 min-w-max pb-1 items-center">
               {TABLES.map(table => {
                 const count = getTableItemCount(table.id)
                 const isActive = activeTable === table.id
+                const tableCart = tableOrders[table.id] || []
+                const tableSubtotal = tableCart.reduce((sum, item) => sum + item.price * item.qty, 0)
+                const hasOrders = count > 0
+
                 return (
                   <button
                     key={table.id}
                     onClick={() => setActiveTable(table.id)}
-                    className={`relative px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-sm ${
+                    className={`group relative flex flex-col items-center justify-between min-w-[78px] sm:min-w-[88px] h-[58px] sm:h-[64px] p-1.5 rounded-xl border-2 transition-all select-none text-left ${
                       isActive
-                        ? 'bg-[#1a5c2a] text-white shadow-[#1a5c2a]/20 scale-105'
-                        : count > 0
-                        ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'border-[#1a5c2a] bg-[#1a5c2a] text-white shadow-md shadow-[#1a5c2a]/30 scale-[1.03] ring-2 ring-[#f5c518]'
+                        : hasOrders
+                        ? 'border-amber-400 bg-amber-50/90 text-amber-950 hover:bg-amber-100 shadow-sm'
+                        : 'border-dashed border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
                     }`}
                   >
-                    <span>{table.name}</span>
-                    {count > 0 && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
-                        isActive ? 'bg-[#f5c518] text-[#1a5c2a]' : 'bg-red-500 text-white animate-pulse'
-                      }`}>
-                        {count} món
+                    {/* Bàn Mini Header: Tên bàn + Chấm trạng thái */}
+                    <div className="w-full flex items-center justify-between gap-1">
+                      <span className={`text-[11px] sm:text-xs font-black truncate ${isActive ? 'text-[#f5c518]' : ''}`}>
+                        {table.id === 'MV' ? '🥡' : table.id === 'SHIP' ? '🛵' : '🪑'} {table.name}
                       </span>
-                    )}
+                      <span
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          hasOrders ? 'bg-amber-500 animate-pulse' : 'bg-emerald-400'
+                        }`}
+                        title={hasOrders ? 'Đang có khách ngồi' : 'Bàn trống'}
+                      />
+                    </div>
+
+                    {/* Bàn Mini Body: Số món & Tạm tính */}
+                    <div className="w-full flex items-end justify-between mt-0.5">
+                      {hasOrders ? (
+                        <>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-md ${
+                            isActive ? 'bg-[#f5c518] text-[#1a5c2a] font-black' : 'bg-amber-200 text-amber-900'
+                          }`}>
+                            {count} món
+                          </span>
+                          <span className={`text-[10px] font-black tabular-nums truncate max-w-[50px] ${
+                            isActive ? 'text-white' : 'text-[#1a5c2a]'
+                          }`}>
+                            {formatPrice(tableSubtotal).replace('₫', '')}
+                          </span>
+                        </>
+                      ) : (
+                        <span className={`text-[10px] font-semibold w-full text-center ${
+                          isActive ? 'text-white/80' : 'text-gray-400'
+                        }`}>
+                          Bàn trống
+                        </span>
+                      )}
+                    </div>
                   </button>
                 )
               })}
